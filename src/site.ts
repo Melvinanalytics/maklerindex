@@ -168,6 +168,7 @@ h1.city, h2.city {
   border-top: 1px solid var(--rule);
   text-decoration: none;
 }
+.row[hidden] { display: none; }
 .rank {
   font-family: "Instrument Serif", serif;
   font-size: 1.55rem;

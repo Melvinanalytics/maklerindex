@@ -176,6 +176,7 @@ test("generate writes the three owner routes, DEMO, weights, and llms.txt", asyn
   assert.match(city, /<button type="button" data-filter="small">/);
   assert.match(city, /<button type="button" data-filter="mid">/);
   assert.match(city, /apply\(\);/);
+  assert.match(city, /\.row\[hidden\] \{ display: none; \}/);
   assert.match(city, /Größe filtert\. Review-Zahl und Auftragslast heben niemanden/);
   assert.doesNotMatch(city, /Hanseat Residenz/);
   assert.match(profile, /Büro bestätigt/);
