@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skizze B · Raster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #fff;
+      --ink: #111;
+      --dim: #666;
+      --line: #111;
+      --soft: #ddd;
+      --hi: #ffe600;
+      --pad: clamp(1rem, 3vw, 2rem);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Mono", monospace;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 15px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--line);
+      padding: 0.85rem var(--pad);
+      position: sticky; top: 0; background: #fff; z-index: 2;
+    }
+    .logo { font-weight: 500; text-decoration: none; color: inherit; }
+    nav a { color: inherit; margin-left: 1rem; font-size: 12px; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 2rem var(--pad) 4rem; }
+    .screen { border-bottom: 2px solid var(--line); padding: 2rem 0 2.4rem; }
+    h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.15; margin: 0 0 1rem; max-width: 18ch; }
+    .rule { background: var(--hi); display: inline-block; padding: 0.45rem 0.6rem; margin: 0 0 1.2rem; }
+    .why { color: var(--dim); max-width: 42rem; }
+    .city { border: 2px solid var(--line); box-shadow: 3px 3px 0 #000; padding: 0.7rem 1rem; display: inline-block; text-decoration: none; color: inherit; font-weight: 500; }
+    h2 { font-size: 2rem; margin: 0 0 0.4rem; }
+    .filters { margin: 1rem 0; }
+    .filters span { border: 2px solid #000; padding: 0.3rem 0.55rem; margin-right: 0.4rem; font-size: 12px; }
+    .filters .on { background: var(--hi); }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { border-top: 1px solid var(--line); padding: 0.85rem 0.4rem; text-align: left; vertical-align: top; }
+    .demo { border: 1px solid #000; font-size: 10px; padding: 0 4px; }
+    .ok { background: var(--hi); padding: 0 4px; }
+    .profile .box { border: 2px solid #000; padding: 1.2rem; }
+    .outs a { display: inline-block; border: 2px solid #000; box-shadow: 3px 3px 0 #000; padding: 0.5rem 0.8rem; margin: 0.4rem 0.5rem 0 0; text-decoration: none; color: inherit; }
+    @media (max-width: 640px) { .hide-sm { display: none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="#home">MAKLERINDEX</a>
+    <nav><a href="#hannover">/hannover</a><a href="#impressum">/impressum</a></nav>
+  </header>
+  <main class="wrap">
+    <section class="screen" id="home">
+      <h1>Finde den Makler, nicht das Portal.</h1>
+      <p class="rule">Rang = feste Formel. Nicht käuflich. Bürogröße zählt nicht.</p>
+      <p class="why">Eigentümer sollen ein Büro finden, bevor das Portal die Marke ist. Kein Lead, keine Anzeige auf dem Rang.</p>
+      <a class="city" href="#hannover">Hannover →</a>
+    </section>
+    <section class="screen" id="hannover">
+      <h2>/hannover</h2>
+      <p class="why">Bezeugte Rangliste. Größe filtert, sie gewinnt nicht.</p>
+      <div class="filters"><span class="on">boutique</span><span class="on">klein</span><span>mittel</span></div>
+      <table>
+        <thead><tr><th>#</th><th>Person</th><th>Büro</th><th class="hide-sm">Signal</th></tr></thead>
+        <tbody>
+          <tr><td>01</td><td>Lena Harms <span class="demo">DEMO</span></td><td>Kleefeld</td><td class="hide-sm"><span class="ok">büro bestätigt</span></td></tr>
+          <tr><td>02</td><td>Nils Ahlers <span class="demo">DEMO</span></td><td>Lister Platz</td><td class="hide-sm"><span class="ok">büro bestätigt</span></td></tr>
+          <tr><td>03</td><td>Mira Vogt <span class="demo">DEMO</span></td><td>Nordstadt</td><td class="hide-sm">unbestätigt</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="screen profile" id="lena">
+      <p style="font-size:12px;color:#666">/hannover/lena-harms</p>
+      <div class="box">
+        <h2>Lena Harms <span class="demo">DEMO</span></h2>
+        <p>Büro Kleefeld · 4 Personen (Filter)</p>
+        <p><span class="ok">büro bestätigt</span> 2026-03-12 · human:demo-kleefeld</p>
+        <p class="outs"><a href="#">website</a><a href="#">mailto</a><a href="#">tel</a></p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skizze C · Stein</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --stone: #ece9e2;
+      --ink: #24221e;
+      --mute: #6f6a62;
+      --hair: #c3bdb2;
+      --copper: #7a4a32;
+      --pad: clamp(1.5rem, 5vw, 4.5rem);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--stone);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.01em;
+    }
+    header {
+      padding: 2rem var(--pad) 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .mark {
+      font-size: 0.72rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: inherit;
+    }
+    nav a { color: var(--mute); text-decoration: none; font-size: 0.8rem; margin-left: 1.5rem; }
+    .wrap { padding: 0 var(--pad) 5rem; max-width: 72rem; }
+    .screen { padding: 3rem 0 4rem; border-top: 1px solid var(--hair); }
+    h1 {
+      font-family: "Newsreader", serif;
+      font-weight: 400;
+      font-size: clamp(2.8rem, 7vw, 5.8rem);
+      line-height: 1.02;
+      margin: 0 0 2.5rem;
+      max-width: 12ch;
+    }
+    .rule { font-size: 1.2rem; max-width: 36rem; margin: 0 0 3rem; }
+    .why { color: var(--mute); max-width: 32rem; margin: 0 0 3rem; }
+    .city-link {
+      font-family: "Newsreader", serif;
+      font-size: 1.5rem;
+      color: inherit;
+    }
+    h2 {
+      font-family: "Newsreader", serif;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 400;
+      margin: 0 0 0.5rem;
+    }
+    .lede { color: var(--mute); margin: 0 0 2.5rem; }
+    .person {
+      display: grid;
+      grid-template-columns: 4rem 1fr 10rem;
+      gap: 1.5rem;
+      padding: 1.4rem 0;
+      border-top: 1px solid var(--hair);
+      text-decoration: none;
+      color: inherit;
+    }
+    .n { font-family: "Newsreader", serif; font-size: 1.6rem; }
+    .demo {
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-left: 0.4rem;
+    }
+    .right { text-align: right; font-size: 0.8rem; color: var(--mute); align-self: center; }
+    .chip { display: inline-block; border-bottom: 1px solid var(--ink); padding-bottom: 1px; color: var(--ink); }
+    .profile-name { font-family: "Newsreader", serif; font-size: clamp(2.2rem, 6vw, 3.8rem); margin: 0; }
+    .outs a { color: var(--copper); margin-right: 1.4rem; }
+    .museum { margin-top: 3rem; font-size: 0.85rem; color: var(--mute); max-width: 28rem; }
+    @media (max-width: 700px) {
+      .person { grid-template-columns: 2.2rem 1fr; }
+      .right { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="mark" href="#home">Maklerindex</a>
+    <nav><a href="#hannover">Hannover</a><a href="#impressum">Impressum</a></nav>
+  </header>
+  <main class="wrap">
+    <section class="screen" id="home" style="border-top:0;padding-top:1rem">
+      <h1>Finde den Makler, nicht das Portal.</h1>
+      <p class="rule">Der Rang in einer Stadt folgt einer festen Formel. Er ist nicht käuflich. Die Bürogröße zählt nicht mit.</p>
+      <p class="why">Ein Index für Eigentümer, die ein Büro beauftragen. Nicht für Käufer. Nicht für Portale.</p>
+      <a class="city-link" href="#hannover">Hannover</a>
+    </section>
+    <section class="screen" id="hannover">
+      <h2>Hannover</h2>
+      <p class="lede">Drei Büros, bezeugt. Größe filtert.</p>
+      <a class="person" href="#lena">
+        <div>1</div>
+        <div>
+          <div class="n">Lena Harms<span class="demo">Demo</span></div>
+          <div style="color:var(--mute);margin-top:.25rem">Büro Kleefeld</div>
+        </div>
+        <div class="right"><span class="chip">Büro bestätigt</span><br />Boutique</div>
+      </a>
+      <a class="person" href="#nils">
+        <div>2</div>
+        <div>
+          <div class="n">Nils Ahlers<span class="demo">Demo</span></div>
+          <div style="color:var(--mute);margin-top:.25rem">Ahlers am Lister Platz</div>
+        </div>
+        <div class="right"><span class="chip">Büro bestätigt</span><br />Boutique</div>
+      </a>
+      <a class="person" href="#mira">
+        <div>3</div>
+        <div>
+          <div class="n">Mira Vogt<span class="demo">Demo</span></div>
+          <div style="color:var(--mute);margin-top:.25rem">Nordstadt Immobilien</div>
+        </div>
+        <div class="right">Unbestätigt<br />Klein</div>
+      </a>
+    </section>
+    <section class="screen" id="lena">
+      <p class="lede">Hannover · Rang 1</p>
+      <p class="profile-name">Lena Harms<span class="demo">Demo</span></p>
+      <p style="margin:0.6rem 0 1.6rem;color:var(--mute)">Büro Kleefeld · List, Kleefeld, Oststadt</p>
+      <p><span class="chip">Büro bestätigt</span> am 12. März 2026</p>
+      <p class="outs" style="margin-top:2rem">
+        <a href="#">Website</a>
+        <a href="#">Schreiben</a>
+        <a href="#">Anrufen</a>
+      </p>
+      <p class="museum">Kontakt geht an das Büro. Der Index speichert keine Anfragen.</p>
+    </section>
+  </main>
+</body>
+</html>
