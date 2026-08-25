@@ -148,7 +148,7 @@ test("formula parser rejects forbidden terms and non-SAW methods", () => {
 
 test("generate writes the three owner routes, DEMO, weights, and llms.txt", async () => {
   const outputDirectory = await mkdtemp(path.join(os.tmpdir(), "maklerindex-"));
-  await generate({ outputDirectory, asOf });
+  await generate({ outputDirectory, asOf, basePath: "", origin: "" });
   const home = await readFile(path.join(outputDirectory, "index.html"), "utf8");
   const city = await readFile(
     path.join(outputDirectory, "hannover", "index.html"),
@@ -159,6 +159,7 @@ test("generate writes the three owner routes, DEMO, weights, and llms.txt", asyn
     "utf8",
   );
   const llms = await readFile(path.join(outputDirectory, "llms.txt"), "utf8");
+  const robots = await readFile(path.join(outputDirectory, "robots.txt"), "utf8");
   const research = await readFile(
     path.join(outputDirectory, "docs", "research", "consensus-2026-08-25.md"),
     "utf8",
@@ -169,6 +170,7 @@ test("generate writes the three owner routes, DEMO, weights, and llms.txt", asyn
   assert.match(home, /Sichtbar ist das Büro und die Person/);
   assert.doesNotMatch(home, /McMakler/);
   assert.doesNotMatch(home, /Vertriebsfabrik/);
+  assert.doesNotMatch(home, /<form/i);
   assert.match(city, /Lena Harms/);
   assert.match(city, /Mira Vogt/);
   assert.match(city, /Demo/);
@@ -181,12 +183,35 @@ test("generate writes the three owner routes, DEMO, weights, and llms.txt", asyn
   assert.doesNotMatch(city, /Hanseat Residenz/);
   assert.match(profile, /Büro bestätigt/);
   assert.match(profile, /Kein Formular/);
+  assert.doesNotMatch(profile, /<form/i);
+  assert.match(profile, /00000/);
   assert.match(llms, /# Maklerindex/);
   assert.match(llms, /human-reviewed/);
   assert.match(llms, /unverified/);
   assert.match(llms, /Published SAW/);
+  assert.match(robots, /User-agent: \*/);
+  assert.match(robots, /Allow: \/llms\.txt/);
   assert.match(research, /Fang, L\./);
   assert.doesNotMatch(home, /Inter/);
   const ownerHtml = `${home}\n${city}\n${profile}`;
   assert.doesNotMatch(ownerHtml, /Fang|Hayunga|Turnbull|Dombrow|Dabholkar|Yelowitz|Owusu|DEMATEL|TOPSIS|\bSAW\b/);
+});
+
+test("Pages base path prefixes owner links and robots", async () => {
+  const outputDirectory = await mkdtemp(path.join(os.tmpdir(), "maklerindex-pages-"));
+  await generate({
+    outputDirectory,
+    asOf,
+    basePath: "/maklerindex",
+    origin: "https://melvinanalytics.github.io",
+  });
+  const home = await readFile(path.join(outputDirectory, "index.html"), "utf8");
+  const robots = await readFile(path.join(outputDirectory, "robots.txt"), "utf8");
+  const llms = await readFile(path.join(outputDirectory, "llms.txt"), "utf8");
+  assert.match(home, /href="\/maklerindex\/hannover\/"/);
+  assert.match(home, /href="\/maklerindex\/llms\.txt"/);
+  assert.doesNotMatch(home, /href="\/hannover\/"/);
+  assert.match(robots, /Allow: \/maklerindex\//);
+  assert.match(robots, /Allow: \/maklerindex\/llms\.txt/);
+  assert.match(llms, /https:\/\/melvinanalytics\.github\.io\/maklerindex\/llms\.txt/);
 });

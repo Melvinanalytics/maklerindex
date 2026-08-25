@@ -2,7 +2,11 @@
 
 Finde den Makler, nicht das Portal. An unpaid index of listing agents for German property owners. Not a listing portal. Not a buyer search. Ranking is not for sale.
 
-The product is the OKF v0.2 bundle in `okf/`. The site, `llms.txt`, and the MCP server are projections of that bundle.
+Live site: https://melvinanalytics.github.io/maklerindex/
+
+GitHub Pages, from `main`, project path `/maklerindex/`. The three owner screens are `/`, `/hannover/`, and `/hannover/lena-harms/`.
+
+The product is the OKF v0.2 bundle in `okf/`. The site, `llms.txt`, and the MCP server are projections of that bundle. `robots.txt` and `llms.txt` are written into `dist/` on generate. They are not repo-only files.
 
 ## How to run
 
@@ -31,7 +35,9 @@ pnpm test
 pnpm prove
 ```
 
-`pnpm prove` generates, serves `dist/`, and fetches the three owner routes plus `/llms.txt` and a source markdown file.
+`pnpm prove` generates, serves `dist/`, and fetches the three owner routes plus `/llms.txt`, `/robots.txt`, and a source markdown file.
+
+On GitHub, `ci.yml` runs install, `pnpm test`, generate, and prove on every PR and on `main`. `pages.yml` deploys `dist/` to GitHub Pages from `main` with `BASE_PATH=/maklerindex`.
 
 ## How to ask a model
 
@@ -53,4 +59,4 @@ The executable form is published SAW in `okf/computations/city-ranking.md`. The 
 
 Visual contract: `design/visual-spec.md`. Architecture: `design/architecture.md`.
 
-License: MIT. Impressum and Datenschutz pages are placeholders.
+License: MIT (`LICENSE`). Impressum and Datenschutz pages are placeholders. DEMO offices are labeled DEMO. Contacts use `example.invalid`. There is no form.

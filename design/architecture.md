@@ -44,13 +44,15 @@ Rejected from candidate 1: tagging every signal as `size-band:2-5` instead of fr
 - We accept a full rebuild of `dist/` on each generate in exchange for no database.
 - We accept factory offices in the corpus and out of the ranked list in exchange for never letting volume win.
 - We accept DEMO `.invalid` contacts in exchange for shipping a labeled corpus without real phones.
+- We accept GitHub Pages at `/maklerindex/` instead of a custom domain or an app host.
 
 ## Alternatives considered
 
 - Next.js plus a database. Fat app. Ranking would drift from the bundle.
 - Astro content collections as the source of truth. The HTML framework would own the product. OKF would be an export.
 - Serving raw markdown with no generate step. Fine for agents, poor for the owner screens this spec locks.
+- Origin or Vercel as the public host. The site is static. GitHub Actions already has the tree.
 
 ## Next implementation step
 
-Keep the SAW fence, the parser reject list, and the owner sentence in lockstep when the literature lock changes.
+Merge to `main` so Pages can serve `/maklerindex/`. Keep the SAW fence, the parser reject list, and the owner sentence in lockstep when the literature lock changes.

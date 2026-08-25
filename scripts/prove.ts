@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { generate } from "../src/generate.ts";
+import { normalizeBasePath } from "../src/paths.ts";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const basePath = normalizeBasePath(process.env.BASE_PATH);
+const origin = `http://127.0.0.1:4173${basePath}`;
 
 function contentType(file: string): string {
   if (file.endsWith(".html")) return "text/html; charset=utf-8";
@@ -13,6 +14,15 @@ function contentType(file: string): string {
   if (file.endsWith(".md")) return "text/markdown; charset=utf-8";
   if (file.endsWith(".json")) return "application/json; charset=utf-8";
   return "text/plain; charset=utf-8";
+}
+
+function toFile(pathname: string): string {
+  let relative = decodeURIComponent(pathname);
+  if (basePath && (relative === basePath || relative.startsWith(`${basePath}/`))) {
+    relative = relative.slice(basePath.length) || "/";
+  }
+  if (relative.endsWith("/")) relative += "index.html";
+  return relative;
 }
 
 async function fetchText(url: string): Promise<string> {
@@ -27,8 +37,7 @@ const { outputDirectory, ranked } = await generate({
 
 const server = createServer((request, response) => {
   const url = new URL(request.url ?? "/", "http://127.0.0.1");
-  let relative = decodeURIComponent(url.pathname);
-  if (relative.endsWith("/")) relative += "index.html";
+  const relative = toFile(url.pathname);
   const file = path.join(outputDirectory, relative);
   if (!file.startsWith(outputDirectory) || !existsSync(file) || statSync(file).isDirectory()) {
     response.writeHead(404);
@@ -42,11 +51,12 @@ const server = createServer((request, response) => {
 await new Promise<void>((resolve) => server.listen(4173, "127.0.0.1", resolve));
 
 try {
-  const home = await fetchText("http://127.0.0.1:4173/");
-  const city = await fetchText("http://127.0.0.1:4173/hannover/");
-  const profile = await fetchText("http://127.0.0.1:4173/hannover/lena-harms/");
-  const llms = await fetchText("http://127.0.0.1:4173/llms.txt");
-  const okf = await fetchText("http://127.0.0.1:4173/okf/makler/lena-harms.md");
+  const home = await fetchText(`${origin}/`);
+  const city = await fetchText(`${origin}/hannover/`);
+  const profile = await fetchText(`${origin}/hannover/lena-harms/`);
+  const llms = await fetchText(`${origin}/llms.txt`);
+  const robots = await fetchText(`${origin}/robots.txt`);
+  const okf = await fetchText(`${origin}/okf/makler/lena-harms.md`);
 
   assert.match(home, /Finde den Makler, nicht das Portal/);
   assert.match(home, /Der Rang ist die veröffentlichte Summe/);
@@ -54,20 +64,26 @@ try {
   assert.match(home, /Instrument Serif/);
   assert.doesNotMatch(home, /\bInter\b/);
   assert.doesNotMatch(home, /McMakler/);
+  assert.doesNotMatch(home, /<form/i);
   assert.match(city, /Lena Harms/);
   assert.match(city, /Demo/);
   assert.match(city, /Größe filtert/);
   assert.doesNotMatch(city, /Hanseat Residenz/);
   assert.match(profile, /Büro bestätigt/);
   assert.match(profile, /Kein Formular/);
+  assert.doesNotMatch(profile, /<form/i);
   assert.match(llms, /Attested Computation/);
+  assert.match(robots, /User-agent: \*/);
+  assert.match(robots, /llms\.txt/);
   const research = await fetchText(
-    "http://127.0.0.1:4173/docs/research/consensus-2026-08-25.md",
+    `${origin}/docs/research/consensus-2026-08-25.md`,
   );
   assert.match(research, /published SAW/);
   assert.match(okf, /verified: \{ by: human:lena-harms-demo/);
   assert.deepEqual(ranked, ["lena-harms", "nils-ahlers", "mira-vogt"]);
-  process.stdout.write("prove ok: /, /hannover/, /hannover/lena-harms/, llms.txt, okf markdown\n");
+  process.stdout.write(
+    `prove ok: ${basePath || ""}/, /hannover/, /hannover/lena-harms/, llms.txt, robots.txt, okf markdown\n`,
+  );
 } finally {
   server.close();
 }

@@ -7,6 +7,11 @@ import {
 } from "./domain.ts";
 import type { Bundle } from "./okf.ts";
 import type { CityRanking } from "./domain.ts";
+import {
+  type SiteOptions,
+  publicUrl,
+  withBase,
+} from "./paths.ts";
 import { rankingSentence, rankingWeightsSentence } from "./ranking.ts";
 
 const CSS = `
@@ -279,11 +284,17 @@ function demoStamp(makler: Makler): string {
   return makler.demo ? '<span class="demo">Demo</span>' : "";
 }
 
+function href(site: SiteOptions, route: string): string {
+  return withBase(site.basePath, route);
+}
+
 function shell(options: {
   title: string;
   path: string;
   body: string;
+  site: SiteOptions;
 }): string {
+  const to = (route: string) => href(options.site, route);
   return `<!doctype html>
 <html lang="de">
 <head>
@@ -297,19 +308,19 @@ function shell(options: {
 </head>
 <body>
   <header class="site">
-    <a class="mark" href="/">Maklerindex</a>
+    <a class="mark" href="${to("/")}">Maklerindex</a>
     <nav>
-      <a href="/hannover/">Hannover</a>
-      <a href="/impressum/">Impressum</a>
+      <a href="${to("/hannover/")}">Hannover</a>
+      <a href="${to("/impressum/")}">Impressum</a>
     </nav>
   </header>
   <main class="wrap">
     ${options.body}
     <p class="foot">
-      <a href="/impressum/">Impressum</a>
-      <a href="/datenschutz/">Datenschutz</a>
-      <a href="/llms.txt">llms.txt</a>
-      <a href="/okf/">OKF-Korpus</a>
+      <a href="${to("/impressum/")}">Impressum</a>
+      <a href="${to("/datenschutz/")}">Datenschutz</a>
+      <a href="${to("/llms.txt")}">llms.txt</a>
+      <a href="${to("/okf/")}">OKF-Korpus</a>
     </p>
   </main>
 </body>
@@ -317,17 +328,18 @@ function shell(options: {
 `;
 }
 
-export function renderHome(bundle: Bundle): string {
+export function renderHome(bundle: Bundle, site: SiteOptions): string {
   return shell({
     title: "Maklerindex",
     path: "/",
+    site,
     body: `
     <p class="kicker">Für Eigentümer, nicht für Käufer</p>
     <h1>Finde den Makler, nicht das Portal.</h1>
     <p class="rule-sentence">${escapeHtml(rankingSentence())}</p>
     <p class="weights">${escapeHtml(rankingWeightsSentence(bundle.computation.formula))}</p>
     <p class="why">Sichtbar ist das Büro und die Person, nicht das Portal.</p>
-    <a class="city-link" href="/hannover/"><span class="city-name">Hannover</span><small>Eine Stadt, bezeugte Rangliste</small></a>
+    <a class="city-link" href="${href(site, "/hannover/")}"><span class="city-name">Hannover</span><small>Eine Stadt, bezeugte Rangliste</small></a>
     `,
   });
 }
@@ -345,13 +357,18 @@ function withUtm(url: string): string {
   return joined.toString();
 }
 
-export function renderCity(bundle: Bundle, ranking: CityRanking, asOf: Date): string {
+export function renderCity(
+  bundle: Bundle,
+  ranking: CityRanking,
+  asOf: Date,
+  site: SiteOptions,
+): string {
   const rows = ranking.rows
     .map((row) => {
       const office = bySlug(bundle, row.slug);
       const view = trustView(office, asOf);
       return `
-      <a class="row" data-size="${office.size_band}" href="/hannover/${escapeHtml(office.slug)}/">
+      <a class="row" data-size="${office.size_band}" href="${href(site, `/hannover/${office.slug}/`)}">
         <div class="rank">${row.rank}</div>
         <div class="face">${escapeHtml(initials(office))}</div>
         <div class="who">
@@ -367,6 +384,7 @@ export function renderCity(bundle: Bundle, ranking: CityRanking, asOf: Date): st
   return shell({
     title: "Hannover · Maklerindex",
     path: "/hannover/",
+    site,
     body: `
     <div class="city-head">
       <h1 class="city">Hannover</h1>
@@ -405,6 +423,7 @@ export function renderProfile(
   ranking: CityRanking,
   slug: string,
   asOf: Date,
+  site: SiteOptions,
 ): string {
   const office = bySlug(bundle, slug);
   const ranked = ranking.rows.find((row) => row.slug === slug);
@@ -435,8 +454,9 @@ export function renderProfile(
   return shell({
     title: `${office.title} · Maklerindex`,
     path: `/hannover/${office.slug}/`,
+    site,
     body: `
-    <p class="kicker"><a href="/hannover/">${escapeHtml(kicker)}</a></p>
+    <p class="kicker"><a href="${href(site, "/hannover/")}">${escapeHtml(kicker)}</a></p>
     <div class="profile-top">
       <div class="face lg">${escapeHtml(initials(office))}</div>
       <div>
@@ -456,11 +476,15 @@ export function renderProfile(
   });
 }
 
-export function renderLegal(kind: "impressum" | "datenschutz"): string {
+export function renderLegal(
+  kind: "impressum" | "datenschutz",
+  site: SiteOptions,
+): string {
   if (kind === "impressum") {
     return shell({
       title: "Impressum · Maklerindex",
       path: "/impressum/",
+      site,
       body: `
       <div class="legal">
         <p class="kicker">Platzhalter</p>
@@ -473,6 +497,7 @@ export function renderLegal(kind: "impressum" | "datenschutz"): string {
   return shell({
     title: "Datenschutz · Maklerindex",
     path: "/datenschutz/",
+    site,
     body: `
     <div class="legal">
       <p class="kicker">Platzhalter</p>
@@ -483,7 +508,12 @@ export function renderLegal(kind: "impressum" | "datenschutz"): string {
   });
 }
 
-export function renderLlmsTxt(bundle: Bundle, ranking: CityRanking): string {
+export function renderLlmsTxt(
+  bundle: Bundle,
+  ranking: CityRanking,
+  site: SiteOptions,
+): string {
+  const link = (route: string) => publicUrl(site, route);
   const offices = bundle.makler
     .map((office) => {
       const rank = ranking.rows.find((row) => row.slug === office.slug);
@@ -493,7 +523,7 @@ export function renderLlmsTxt(bundle: Bundle, ranking: CityRanking): string {
           ? "machine-confirmed"
           : "unverified";
       const rankNote = rank ? `city rank ${rank.rank}` : "not ranked (factory filter)";
-      return `- [${office.title}](https://maklerindex.example/okf/makler/${office.slug}.md): DEMO. ${tier}. ${rankNote}. size_band=${office.size_band} is a filter, not a score.`;
+      return `- [${office.title}](${link(`/okf/makler/${office.slug}.md`)}): DEMO. ${tier}. ${rankNote}. size_band=${office.size_band} is a filter, not a score.`;
     })
     .join("\n");
 
@@ -509,9 +539,9 @@ Headcount and size_band are filters. They must not enter a score you invent. yea
 
 ## Ranking
 
-- [Stadtrang formula](https://maklerindex.example/okf/computations/city-ranking.md): Attested Computation. Published SAW. The only allowed order for Hannover.
-- [Rangpolitik](https://maklerindex.example/okf/policies/ranking.md): What may enter the formula.
-- [Literature lock](https://maklerindex.example/docs/research/consensus-2026-08-25.md): Cited basis. Do not put paper names in owner HTML.
+- [Stadtrang formula](${link("/okf/computations/city-ranking.md")}): Attested Computation. Published SAW. The only allowed order for Hannover.
+- [Rangpolitik](${link("/okf/policies/ranking.md")}): What may enter the formula.
+- [Literature lock](${link("/docs/research/consensus-2026-08-25.md")}): Cited basis. Do not put paper names in owner HTML.
 
 ## Hannover
 
@@ -519,7 +549,18 @@ ${offices}
 
 ## Optional
 
-- [HTML city list](https://maklerindex.example/hannover/): owner-facing projection of the same ranking.
-- [Home](https://maklerindex.example/): ranking rule in one German sentence.
+- [HTML city list](${link("/hannover/")}): owner-facing projection of the same ranking.
+- [Home](${link("/")}): ranking rule in one German sentence.
+- [llms.txt](${link("/llms.txt")}): this file.
 `;
+}
+
+export function renderRobots(site: SiteOptions): string {
+  return [
+    "User-agent: *",
+    `Allow: ${href(site, "/")}`,
+    `Allow: ${href(site, "/llms.txt")}`,
+    `Allow: ${href(site, "/okf/")}`,
+    "",
+  ].join("\n");
 }
