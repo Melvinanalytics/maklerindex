@@ -14,7 +14,7 @@ Outfit 300–700. Bronze `#c4a574` only for the home text link and quiet rank ma
 
 `/hannover/` dark contact sheet. Overlapping stills, thin dashed edge, outline rank numerals. No buttons. Factory-scale offices stay out of the sheet.
 
-`/hannover/<slug>/` full-bleed portrait. Type in the picture. Contact as plain text: website · Schreiben · Anrufen. Website underlined. No chips, no outline buttons. Caption includes kein Formular.
+`/hannover/<slug>/` full-bleed portrait. Type in the picture. Contact as plain text: website · Schreiben · Anrufen. Website underlined. No chips, no outline buttons. Caption: Demo-Daten · alle Personen fiktiv. Kein Formular. Der Kontakt geht an das Büro.
 
 ## Portraits
 

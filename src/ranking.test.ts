@@ -187,7 +187,8 @@ test("generate writes the three owner routes, DEMO, weights, and llms.txt", asyn
   assert.doesNotMatch(city, /<button/i);
   assert.doesNotMatch(city, /Hanseat Residenz/);
   assert.match(profile, /Büro bestätigt/);
-  assert.match(profile, /kein Formular/i);
+  assert.match(profile, /Kein Formular\. Der Kontakt geht an das Büro\./);
+  assert.match(city, /Demo/);
   assert.match(profile, /Schreiben/);
   assert.match(profile, /Anrufen/);
   assert.doesNotMatch(profile, /<form/i);

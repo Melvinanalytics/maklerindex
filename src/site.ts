@@ -86,7 +86,8 @@ header.site a { min-height: 44px; display: inline-flex; align-items: center; }
   font-size: min(42vw, 22rem);
   font-weight: 300;
   line-height: 0.75;
-  color: rgba(196, 165, 116, 0.18);
+  color: rgba(196, 165, 116, 0.22);
+  -webkit-text-stroke: 1px rgba(196, 165, 116, 0.34);
   pointer-events: none;
   user-select: none;
 }
@@ -95,11 +96,11 @@ header.site a { min-height: 44px; display: inline-flex; align-items: center; }
   left: var(--pad);
   bottom: 4.8rem;
   z-index: 2;
-  max-width: min(38rem, 86vw);
+  max-width: min(44rem, 92vw);
 }
 h1.lead {
   margin: 0 0 1.1rem;
-  font-size: clamp(2.4rem, 7vw, 5.2rem);
+  font-size: clamp(2.05rem, 5.2vw, 4.4rem);
   font-weight: 600;
   line-height: 0.95;
   letter-spacing: -0.03em;
@@ -155,9 +156,9 @@ h1.city-title {
 .still {
   position: relative;
   flex: 0 0 auto;
-  width: min(28vw, 260px);
+  width: min(32vw, 290px);
   aspect-ratio: 3 / 4;
-  margin-left: -2.4vw;
+  margin-left: -5.5vw;
   outline: 1px dashed var(--bronze-quiet);
   overflow: hidden;
   background: #111;
@@ -255,10 +256,11 @@ h1.person {
 .foot a { min-height: 36px; display: inline-flex; align-items: center; }
 .foot.in-flow { position: static; margin: 2rem var(--pad) 0; }
 @media (max-width: 640px) {
-  .still { width: min(62vw, 240px); margin-left: -8vw; }
+  .still { width: min(68vw, 250px); margin-left: -12vw; }
   .overprint { font-size: 58vw; right: -0.12em; }
   .copy { bottom: 5.5rem; }
   .bleed img.ground { object-position: 42% 18%; }
+  h1.lead { font-size: clamp(1.85rem, 11vw, 2.4rem); }
 }
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto; }
@@ -516,7 +518,7 @@ export function renderProfile(
         <h1 class="person">${escapeHtml(office.title)}</h1>
         <p class="traits">${escapeHtml(traitLine(office, view))}</p>
         <div class="contacts">${contacts(office)}</div>
-        <p class="caption">Demo-Daten · alle Personen fiktiv · kein Formular</p>
+        <p class="caption">Demo-Daten · alle Personen fiktiv. Kein Formular. Der Kontakt geht an das Büro.</p>
       </div>
     </div>`,
   });

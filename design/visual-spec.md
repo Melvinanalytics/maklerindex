@@ -26,7 +26,7 @@ Type: Outfit, 300–700. Not Inter. Not Instrument Serif.
 
 Header: 0.72rem, uppercase, letter-spacing `0.22em`.
 
-Home headline: `clamp(2.4rem, 7vw, 5.2rem)`, line-height 0.95, tracking tight.
+Home headline: `clamp(2.05rem, 5.2vw, 4.4rem)`, two lines, line-height 0.95, tracking tight.
 
 City name: `clamp(3rem, 10vw, 7.5rem)`.
 
@@ -77,7 +77,7 @@ Lower left:
 - Traits as plain text: Mikromarkt · Verkäuferseite · unabhängig · Büro bestätigt
 - Contact: hostname underlined · Schreiben · Anrufen. No chips.
 
-Huge quiet rank overprinted. Tiny caption: Demo-Daten · alle Personen fiktiv · kein Formular.
+Huge quiet rank overprinted. Tiny caption: Demo-Daten · alle Personen fiktiv. Kein Formular. Der Kontakt geht an das Büro.
 
 Unranked factory profiles: dark ground, no synthetic face, no overprint.
 
