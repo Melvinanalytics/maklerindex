@@ -13,6 +13,8 @@ function contentType(file: string): string {
   if (file.endsWith(".txt")) return "text/plain; charset=utf-8";
   if (file.endsWith(".md")) return "text/markdown; charset=utf-8";
   if (file.endsWith(".json")) return "application/json; charset=utf-8";
+  if (file.endsWith(".jpg") || file.endsWith(".jpeg")) return "image/jpeg";
+  if (file.endsWith(".png")) return "image/png";
   return "text/plain; charset=utf-8";
 }
 
@@ -58,20 +60,28 @@ try {
   const robots = await fetchText(`${origin}/robots.txt`);
   const okf = await fetchText(`${origin}/okf/makler/lena-harms.md`);
 
-  assert.match(home, /Finde den Makler, nicht das Portal/);
-  assert.match(home, /Der Rang ist die veröffentlichte Summe/);
-  assert.match(home, /Gewichte 25, 20, 25 und 30/);
-  assert.match(home, /Instrument Serif/);
+  assert.match(home, /Finde den Makler,/);
+  assert.match(home, /nicht das Portal/);
+  assert.match(home, /Platz 01 bekommt/);
+  assert.match(home, /Hannover ansehen/);
+  assert.match(home, /Outfit/);
   assert.doesNotMatch(home, /\bInter\b/);
   assert.doesNotMatch(home, /McMakler/);
   assert.doesNotMatch(home, /<form/i);
+  assert.doesNotMatch(home, /Instrument Serif/);
   assert.match(city, /Lena Harms/);
-  assert.match(city, /Demo/);
-  assert.match(city, /Größe filtert/);
+  assert.match(city, /fiktiv|Demo/);
+  assert.doesNotMatch(city, /<button/i);
   assert.doesNotMatch(city, /Hanseat Residenz/);
   assert.match(profile, /Büro bestätigt/);
-  assert.match(profile, /Kein Formular/);
+  assert.match(profile, /kein Formular/i);
+  assert.match(profile, /Schreiben/);
+  assert.match(profile, /Anrufen/);
   assert.doesNotMatch(profile, /<form/i);
+  assert.doesNotMatch(profile, /<button/i);
+  const portrait = await fetch(`${origin}/media/lena-harms.jpg`);
+  assert.equal(portrait.status, 200, "DEMO portrait");
+  assert.match(portrait.headers.get("content-type") ?? "", /image\/jpeg/);
   assert.match(llms, /Attested Computation/);
   assert.match(robots, /User-agent: \*/);
   assert.match(robots, /llms\.txt/);

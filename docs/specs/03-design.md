@@ -1,26 +1,29 @@
 # Design
 
-Bogen is locked. The contract is `design/visual-spec.md`. Do not reopen other sketches.
+Still v4 is locked. The contract is `design/visual-spec.md`. Bogen paper, Instrument Serif, and filter chips are not the owner surface.
 
-## Tokens
+## Ground
 
-From the visual spec:
+Dark `#070708`. Type sits in the photograph. Photography plus CSS. No WebGL, no glass, no neon, no shadcn, no Inter.
 
-- paper `#f3eee4`, paper-2 `#e9e1d2`
-- ink `#1c1916`, ink-soft `#5c5348`, rule `#cfc4b0`
-- brick `#8f3a2c` for the DEMO stamp and outbound links only
-- Instrument Serif for names and rank numerals
-- Instrument Sans for UI and meta
-- radius 0, no shadow, no pills
+Outfit 300–700. Bronze `#c4a574` only for the home text link and quiet rank marks. Radius 0.
 
 ## Three screens
 
-- `/` kicker, headline Finde den Makler, nicht das Portal, one ranking sentence, Hannover link
-- `/hannover/` ranked people rows, size as filter, Büro bestätigt as typeset meta
-- `/hannover/<slug>/` person, outbound only, no form
+`/` one full-bleed DEMO portrait (rank 01). Header is MAKLERINDEX and HANNOVER. Headline: Finde den Makler, nicht das Portal. One sentence: Platz 01 bekommt, wer im Stadtteil nachweislich verkauft. Nicht, wer dem Portal am meisten zahlt. Das ist die ganze Regel. Text link, not a button: HANNOVER ANSEHEN →. Huge quiet `01` overprinted. Tiny caption: Demo-Daten · alle Personen fiktiv.
+
+`/hannover/` dark contact sheet. Overlapping stills, thin dashed edge, outline rank numerals. No buttons. Factory-scale offices stay out of the sheet.
+
+`/hannover/<slug>/` full-bleed portrait. Type in the picture. Contact as plain text: website · Schreiben · Anrufen. Website underlined. No chips, no outline buttons. Caption includes kein Formular.
+
+## Portraits
+
+DEMO only. Synthetic files in `design/portraits/`. Alt text says the face is synthetic. Do not scrape real Makler photos. Real portraits later only after claim.
+
+## Trust in the UI
+
+Owners see German. `human:` verified is Büro bestätigt. Missing `verified` is Unbestätigt. Actor ids stay in YAML and `llms.txt`.
 
 ## Not allowed
 
-Inter as the voice of the site. Tailwind marketing layout. Listing photo grid. Map of objects. Star walls. Lead overlay. Headcount as a large KPI. Rank as a medal. Real faces for DEMO. Emoji. Gradient, glass, drop shadow, 12px radius cards.
-
-Owners see German, not `human:` actor ids.
+Inter. Filter chips. Outline buttons. Lead form. Ads. Real faces for DEMO. Paper names in owner HTML.

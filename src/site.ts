@@ -2,7 +2,6 @@ import {
   type Makler,
   type TrustView,
   initials,
-  sizeLabel,
   trustView,
 } from "./domain.ts";
 import type { Bundle } from "./okf.ts";
@@ -12,238 +11,257 @@ import {
   publicUrl,
   withBase,
 } from "./paths.ts";
-import { rankingSentence, rankingWeightsSentence } from "./ranking.ts";
+
+const DEMO_PORTRAITS = new Set(["lena-harms", "nils-ahlers", "mira-vogt"]);
 
 const CSS = `
 :root {
-  --paper: #f3eee4;
-  --paper-2: #e9e1d2;
-  --ink: #1c1916;
-  --ink-soft: #5c5348;
-  --rule: #cfc4b0;
-  --brick: #8f3a2c;
-  --pad: clamp(1.25rem, 4vw, 3.5rem);
-  --measure: 68rem;
+  --ground: #070708;
+  --ink: #f4f1ea;
+  --ink-dim: rgba(244, 241, 234, 0.62);
+  --ink-mute: rgba(244, 241, 234, 0.38);
+  --bronze: #c4a574;
+  --bronze-quiet: rgba(196, 165, 116, 0.38);
+  --pad: clamp(1.1rem, 3.2vw, 2.4rem);
 }
 * { box-sizing: border-box; }
-html { background: var(--paper); color: var(--ink); }
-body {
+html, body {
   margin: 0;
-  font-family: "Instrument Sans", sans-serif;
-  font-size: 17px;
-  line-height: 1.45;
-  background: var(--paper);
+  min-height: 100%;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: Outfit, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
 }
-a { color: inherit; }
-a.out {
-  color: var(--brick);
+a { color: inherit; text-decoration: none; }
+a.link {
+  color: var(--bronze);
   text-underline-offset: 0.22em;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+a.plain { color: inherit; }
+a.plain:hover, a.link:hover { color: var(--bronze); }
+header.site {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  padding: 1.15rem var(--pad);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+header.site a { min-height: 44px; display: inline-flex; align-items: center; }
+.bleed {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--ground);
+}
+.bleed img.ground {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 35% 20%;
+}
+.bleed .shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(7,7,8,0.28) 0%, rgba(7,7,8,0.05) 42%, rgba(7,7,8,0.45) 100%),
+    linear-gradient(180deg, rgba(7,7,8,0.2) 0%, rgba(7,7,8,0.08) 38%, rgba(7,7,8,0.72) 100%);
+}
+.overprint {
+  position: absolute;
+  right: -0.06em;
+  bottom: -0.22em;
+  margin: 0;
+  font-size: min(42vw, 22rem);
+  font-weight: 300;
+  line-height: 0.75;
+  color: rgba(196, 165, 116, 0.18);
+  pointer-events: none;
+  user-select: none;
+}
+.copy {
+  position: absolute;
+  left: var(--pad);
+  bottom: 4.8rem;
+  z-index: 2;
+  max-width: min(38rem, 86vw);
+}
+h1.lead {
+  margin: 0 0 1.1rem;
+  font-size: clamp(2.4rem, 7vw, 5.2rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+.one-sentence {
+  margin: 0 0 1.35rem;
+  max-width: 28rem;
+  font-size: clamp(0.95rem, 1.7vw, 1.12rem);
+  font-weight: 400;
+  color: var(--ink);
+}
+.see {
+  color: var(--bronze);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  font-weight: 500;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
 }
-.wrap { max-width: var(--measure); margin: 0 auto; padding: 0 var(--pad) 5rem; }
-header.site {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 1.15rem var(--pad);
-  border-bottom: 1px solid var(--rule);
-  position: sticky;
-  top: 0;
-  background: var(--paper);
-  z-index: 2;
-}
-.mark {
-  font-family: "Instrument Serif", serif;
-  font-size: 1.35rem;
-  letter-spacing: -0.02em;
-  text-decoration: none;
-}
-nav a {
-  margin-left: 1.25rem;
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: var(--ink-soft);
-}
-.kicker {
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin: 0 0 1.1rem;
-}
-h1 {
-  font-family: "Instrument Serif", serif;
-  font-weight: 400;
-  font-size: clamp(2.6rem, 8vw, 5.4rem);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  margin: 0 0 1.4rem;
-}
-.rule-sentence {
-  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
-  max-width: 38rem;
-  margin: 0 0 0.7rem;
-}
-.weights {
-  font-size: 0.98rem;
-  color: var(--ink-soft);
-  max-width: 38rem;
-  margin: 0 0 2rem;
-}
-.why {
-  max-width: 34rem;
-  color: var(--ink-soft);
-  margin: 0 0 2.4rem;
-}
-.city-link {
-  display: inline-block;
-  font-family: "Instrument Serif", serif;
-  font-size: 1.7rem;
-  text-decoration: none;
-}
-.city-link .city-name {
-  border-bottom: 1px solid var(--ink);
-  padding-bottom: 0.12rem;
-}
-.city-link small {
-  display: block;
-  font-family: "Instrument Sans", sans-serif;
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-top: 0.45rem;
-  color: var(--ink-soft);
-}
-.trust-line {
-  display: none;
-  font-size: 0.72rem;
+.caption {
+  margin: 1.2rem 0 0;
+  font-size: 0.68rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-top: 0.3rem;
+  color: var(--ink-mute);
 }
-.city-head {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1rem;
-  align-items: end;
-  margin: 2.75rem 0 2rem;
+.city-page { min-height: 100vh; padding: 5.2rem 0 3rem; }
+.city-kicker {
+  margin: 0 0 0.7rem;
+  padding: 0 var(--pad);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
 }
-h1.city, h2.city {
-  font-family: "Instrument Serif", serif;
-  font-size: clamp(2.4rem, 7vw, 4.4rem);
-  font-weight: 400;
-  margin: 0;
+h1.city-title {
+  margin: 0 0 2.4rem;
+  padding: 0 var(--pad);
+  font-size: clamp(3rem, 10vw, 7.5rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+.sheet {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  padding: 0 var(--pad) 2rem;
+  overflow-x: auto;
+}
+.still {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(28vw, 260px);
+  aspect-ratio: 3 / 4;
+  margin-left: -2.4vw;
+  outline: 1px dashed var(--bronze-quiet);
+  overflow: hidden;
+  background: #111;
+}
+.still:first-child { margin-left: 0; z-index: 3; }
+.still:nth-child(2) { z-index: 2; }
+.still:nth-child(3) { z-index: 1; }
+.still img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  display: block;
+}
+.still .num {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.55rem;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 300;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--bronze);
+}
+.still .who {
+  position: absolute;
+  left: 0.55rem;
+  bottom: 0.5rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.still .who.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+.rank-line {
+  margin: 0 0 0.55rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+h1.person {
+  margin: 0 0 0.7rem;
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-weight: 600;
+  line-height: 0.95;
   letter-spacing: -0.03em;
 }
-.formula {
-  max-width: 16rem;
+.traits {
+  margin: 0 0 1.1rem;
   font-size: 0.92rem;
-  color: var(--ink-soft);
-  text-align: right;
+  color: var(--ink-dim);
 }
-.filters {
+.contacts {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0 0 1.75rem;
+  gap: 0.35rem 0.2rem;
+  font-size: 0.95rem;
 }
-.filters button {
-  border: 1px solid var(--rule);
-  padding: 0.45rem 0.7rem;
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  background: transparent;
-  font-family: inherit;
-  color: inherit;
-  cursor: pointer;
-}
-.filters button.on { border-color: var(--ink); background: var(--paper-2); }
-.row {
-  display: grid;
-  grid-template-columns: 3.2rem 3.4rem 1fr auto;
-  gap: 0.9rem;
+.contacts a {
+  min-height: 44px;
+  display: inline-flex;
   align-items: center;
-  padding: 1.05rem 0;
-  border-top: 1px solid var(--rule);
-  text-decoration: none;
 }
-.row[hidden] { display: none; }
-.rank {
-  font-family: "Instrument Serif", serif;
-  font-size: 1.55rem;
-  font-variant-numeric: oldstyle-nums;
-  color: var(--ink-soft);
+.contacts .sep { color: var(--ink-mute); padding: 0 0.35rem; }
+.legal-page {
+  min-height: 100vh;
+  padding: 6rem var(--pad) 4rem;
+  max-width: 40rem;
 }
-.face {
-  width: 3.4rem;
-  height: 3.4rem;
-  background: var(--paper-2);
-  display: grid;
-  place-items: center;
-  font-family: "Instrument Serif", serif;
-  font-size: 1.15rem;
+.legal-page h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 600;
+  margin: 0 0 1.2rem;
 }
-.who .name {
-  font-family: "Instrument Serif", serif;
-  font-size: 1.45rem;
-  display: flex;
-  gap: 0.55rem;
-  align-items: baseline;
-  flex-wrap: wrap;
-}
-.buero { color: var(--ink-soft); font-size: 0.95rem; }
-.meta {
-  text-align: right;
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-.demo {
-  font-family: "Instrument Sans", sans-serif;
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  border: 1px solid var(--brick);
-  color: var(--brick);
-  padding: 0.12rem 0.38rem;
-  transform: rotate(-4deg);
-}
-.profile-top { display: grid; grid-template-columns: 7rem 1fr; gap: 1.4rem; align-items: start; margin-top: 2.75rem; }
-.face.lg { width: 7rem; height: 7rem; font-size: 2.1rem; }
-.outs { display: flex; flex-wrap: wrap; gap: 1.1rem; margin-top: 2rem; }
-.facts { margin-top: 2.2rem; display: grid; gap: 0.7rem; max-width: 32rem; }
-.facts div { display: grid; grid-template-columns: 8.5rem 1fr; gap: 1rem; border-top: 1px solid var(--rule); padding-top: 0.7rem; font-size: 0.95rem; }
-.facts .label { color: var(--ink-soft); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; }
-.note { margin-top: 2.4rem; max-width: 34rem; color: var(--ink-soft); font-size: 0.95rem; }
-.legal { max-width: 38rem; margin-top: 2.75rem; }
-.legal p { color: var(--ink-soft); }
+.legal-page p { color: var(--ink-dim); }
 .foot {
-  margin-top: 3.5rem;
-  padding-top: 1.4rem;
-  border-top: 1px solid var(--rule);
-  color: var(--ink-soft);
-  font-size: 0.85rem;
+  position: absolute;
+  left: var(--pad);
+  bottom: 1rem;
+  z-index: 3;
   display: flex;
-  gap: 1.25rem;
-  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
 }
+.foot a { min-height: 36px; display: inline-flex; align-items: center; }
+.foot.in-flow { position: static; margin: 2rem var(--pad) 0; }
 @media (max-width: 640px) {
-  .row { grid-template-columns: 2.2rem 2.8rem 1fr; }
-  .meta { display: none; }
-  .trust-line { display: block; }
-  .formula { text-align: left; max-width: none; }
-  .city-head { grid-template-columns: 1fr; }
-  .profile-top { grid-template-columns: 1fr; }
+  .still { width: min(62vw, 240px); margin-left: -8vw; }
+  .overprint { font-size: 58vw; right: -0.12em; }
+  .copy { bottom: 5.5rem; }
+  .bleed img.ground { object-position: 42% 18%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .demo { transform: none; }
+  * { scroll-behavior: auto; }
 }
 `.trim();
 
@@ -263,10 +281,36 @@ function formatDate(iso: string): string {
   }).format(new Date(iso));
 }
 
-function trustLabel(view: TrustView): string {
+function padRank(value: number): string {
+  return String(value).padStart(2, "0");
+}
+
+function countWord(value: number): string {
+  const words = ["null", "ein", "zwei", "drei", "vier", "fünf", "sechs", "sieben"];
+  return words[value] ?? String(value);
+}
+
+function portraitSrc(site: SiteOptions, slug: string): string | undefined {
+  if (!DEMO_PORTRAITS.has(slug)) return undefined;
+  return href(site, `/media/${slug}.jpg`);
+}
+
+function href(site: SiteOptions, route: string): string {
+  return withBase(site.basePath, route);
+}
+
+function hostLabel(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
+function trustPhrase(view: TrustView): string | undefined {
   switch (view.kind) {
     case "confirmed":
-      return `Büro bestätigt · ${formatDate(view.at)}`;
+      return "Büro bestätigt";
     case "unverified":
       return "Unbestätigt";
     case "stale":
@@ -280,19 +324,49 @@ function trustLabel(view: TrustView): string {
   }
 }
 
-function demoStamp(makler: Makler): string {
-  return makler.demo ? '<span class="demo">Demo</span>' : "";
+function traitLine(office: Makler, view: TrustView): string {
+  const bits: string[] = [];
+  if (office.stadtteile.length) {
+    bits.push(`Mikromarkt ${office.stadtteile.join(" & ")}`);
+  }
+  if (office.seller_special) bits.push("Verkäuferseite");
+  if (office.independent) bits.push("unabhängig");
+  const trust = trustPhrase(view);
+  if (trust) bits.push(trust);
+  return bits.join(" · ");
 }
 
-function href(site: SiteOptions, route: string): string {
-  return withBase(site.basePath, route);
+function withUtm(url: string): string {
+  const joined = new URL(url);
+  joined.searchParams.set("utm_source", "maklerindex");
+  joined.searchParams.set("utm_medium", "referral");
+  return joined.toString();
+}
+
+function contacts(office: Makler): string {
+  const parts: string[] = [];
+  if (office.outbound.website) {
+    parts.push(
+      `<a class="link" href="${escapeHtml(withUtm(office.outbound.website))}">${escapeHtml(hostLabel(office.outbound.website))}</a>`,
+    );
+  }
+  if (office.outbound.email) {
+    parts.push(
+      `<a class="plain" href="mailto:${escapeHtml(office.outbound.email)}">Schreiben</a>`,
+    );
+  }
+  if (office.outbound.phone) {
+    const tel = office.outbound.phone.replaceAll(" ", "");
+    parts.push(`<a class="plain" href="tel:${escapeHtml(tel)}">Anrufen</a>`);
+  }
+  return parts.join('<span class="sep"> · </span>');
 }
 
 function shell(options: {
   title: string;
-  path: string;
-  body: string;
   site: SiteOptions;
+  body: string;
+  footerClass?: string;
 }): string {
   const to = (route: string) => href(options.site, route);
   return `<!doctype html>
@@ -303,44 +377,61 @@ function shell(options: {
   <title>${escapeHtml(options.title)}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>${CSS}</style>
 </head>
 <body>
   <header class="site">
-    <a class="mark" href="${to("/")}">Maklerindex</a>
-    <nav>
-      <a href="${to("/hannover/")}">Hannover</a>
-      <a href="${to("/impressum/")}">Impressum</a>
-    </nav>
+    <a href="${to("/")}">Maklerindex</a>
+    <a href="${to("/hannover/")}">Hannover</a>
   </header>
-  <main class="wrap">
-    ${options.body}
-    <p class="foot">
-      <a href="${to("/impressum/")}">Impressum</a>
-      <a href="${to("/datenschutz/")}">Datenschutz</a>
-      <a href="${to("/llms.txt")}">llms.txt</a>
-      <a href="${to("/okf/")}">OKF-Korpus</a>
-    </p>
-  </main>
+  ${options.body}
+  <p class="foot${options.footerClass ? ` ${options.footerClass}` : ""}">
+    <a href="${to("/impressum/")}">Impressum</a>
+    <a href="${to("/datenschutz/")}">Datenschutz</a>
+    <a href="${to("/llms.txt")}">llms.txt</a>
+  </p>
 </body>
 </html>
 `;
 }
 
-export function renderHome(bundle: Bundle, site: SiteOptions): string {
+export function homeLead(): string {
+  return "Platz 01 bekommt, wer im Stadtteil nachweislich verkauft. Nicht, wer dem Portal am meisten zahlt. Das ist die ganze Regel.";
+}
+
+export function renderHome(
+  bundle: Bundle,
+  ranking: CityRanking,
+  site: SiteOptions,
+): string {
+  const first = ranking.rows[0];
+  const lead = first
+    ? bundle.makler.find((office) => office.slug === first.slug)
+    : undefined;
+  const photo = first ? portraitSrc(site, first.slug) : undefined;
+  const alt = lead
+    ? `Synthetisches DEMO-Porträt von ${lead.title}. Keine reale Person.`
+    : "Synthetisches DEMO-Porträt. Keine reale Person.";
   return shell({
     title: "Maklerindex",
-    path: "/",
     site,
     body: `
-    <p class="kicker">Für Eigentümer, nicht für Käufer</p>
-    <h1>Finde den Makler, nicht das Portal.</h1>
-    <p class="rule-sentence">${escapeHtml(rankingSentence())}</p>
-    <p class="weights">${escapeHtml(rankingWeightsSentence(bundle.computation.formula))}</p>
-    <p class="why">Sichtbar ist das Büro und die Person, nicht das Portal.</p>
-    <a class="city-link" href="${href(site, "/hannover/")}"><span class="city-name">Hannover</span><small>Eine Stadt, bezeugte Rangliste</small></a>
-    `,
+    <div class="bleed">
+      ${
+        photo
+          ? `<img class="ground" src="${escapeHtml(photo)}" alt="${escapeHtml(alt)}" width="1024" height="1536" />`
+          : ""
+      }
+      <div class="shade"></div>
+      <p class="overprint" aria-hidden="true">${first ? padRank(first.rank) : "01"}</p>
+      <div class="copy">
+        <h1 class="lead">Finde den Makler,<br />nicht das Portal.</h1>
+        <p class="one-sentence">${escapeHtml(homeLead())}</p>
+        <a class="see" href="${href(site, "/hannover/")}">Hannover ansehen →</a>
+        <p class="caption">Demo-Daten · alle Personen fiktiv</p>
+      </div>
+    </div>`,
   });
 }
 
@@ -350,71 +441,44 @@ function bySlug(bundle: Bundle, slug: string): Makler {
   return found;
 }
 
-function withUtm(url: string): string {
-  const joined = new URL(url);
-  joined.searchParams.set("utm_source", "maklerindex");
-  joined.searchParams.set("utm_medium", "referral");
-  return joined.toString();
-}
-
 export function renderCity(
   bundle: Bundle,
   ranking: CityRanking,
   asOf: Date,
   site: SiteOptions,
 ): string {
-  const rows = ranking.rows
+  const stills = ranking.rows
     .map((row) => {
       const office = bySlug(bundle, row.slug);
-      const view = trustView(office, asOf);
+      const photo = portraitSrc(site, office.slug);
+      const alt = `Synthetisches DEMO-Porträt von ${office.title}. Keine reale Person.`;
       return `
-      <a class="row" data-size="${office.size_band}" href="${href(site, `/hannover/${office.slug}/`)}">
-        <div class="rank">${row.rank}</div>
-        <div class="face">${escapeHtml(initials(office))}</div>
-        <div class="who">
-          <div class="name">${escapeHtml(office.title)} ${demoStamp(office)}</div>
-          <div class="buero">${escapeHtml(office.buero)} · ${escapeHtml(office.stadtteile.join(", "))}</div>
-          <div class="trust-line">${escapeHtml(trustLabel(view))}</div>
-        </div>
-        <div class="meta">${escapeHtml(trustLabel(view))}<br />${escapeHtml(sizeLabel(office.size_band))}, ${office.headcount} Personen</div>
+      <a class="still" href="${href(site, `/hannover/${office.slug}/`)}" aria-label="${escapeHtml(`${padRank(row.rank)} ${office.title}`)}">
+        ${
+          photo
+            ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(alt)}" width="1024" height="1536" />`
+            : `<div class="who">${escapeHtml(initials(office))}</div>`
+        }
+        <span class="num">${padRank(row.rank)}</span>
+        <span class="who sr">${escapeHtml(office.title)}</span>
       </a>`;
     })
     .join("\n");
 
+  const n = ranking.rows.length;
+  const kicker = `${countWord(n)} Porträts · geordnet nach vier veröffentlichten Kriterien · Stand: ${formatDate(asOf.toISOString())}`;
+
   return shell({
     title: "Hannover · Maklerindex",
-    path: "/hannover/",
     site,
+    footerClass: "in-flow",
     body: `
-    <div class="city-head">
-      <h1 class="city">Hannover</h1>
-      <p class="formula">Rang nach bezeugter Formel. Größe ist ein Filter, kein Preis.</p>
-    </div>
-    <div class="filters" role="group" aria-label="Bürogröße">
-      <button type="button" class="on" data-filter="boutique">Boutique</button>
-      <button type="button" data-filter="small">Klein</button>
-      <button type="button" data-filter="mid">Mittel</button>
-    </div>
-    ${rows}
-    <p class="note">Größe filtert. Review-Zahl und Auftragslast heben niemanden.</p>
-    <script>
-      const buttons = [...document.querySelectorAll('.filters button')];
-      const rows = [...document.querySelectorAll('.row')];
-      function apply() {
-        const on = new Set(buttons.filter((b) => b.classList.contains('on')).map((b) => b.dataset.filter));
-        for (const row of rows) {
-          row.hidden = on.size > 0 && !on.has(row.dataset.size);
-        }
-      }
-      for (const button of buttons) {
-        button.addEventListener('click', () => {
-          button.classList.toggle('on');
-          apply();
-        });
-      }
-      apply();
-    </script>
-    `,
+    <main class="city-page">
+      <p class="city-kicker">${escapeHtml(kicker)}</p>
+      <h1 class="city-title">Hannover</h1>
+      <div class="sheet">${stills}</div>
+      <p class="caption" style="padding:0 var(--pad)">Demo-Daten · alle Personen fiktiv</p>
+    </main>`,
   });
 }
 
@@ -428,51 +492,33 @@ export function renderProfile(
   const office = bySlug(bundle, slug);
   const ranked = ranking.rows.find((row) => row.slug === slug);
   const view = trustView(office, asOf);
+  const photo = portraitSrc(site, office.slug);
   const kicker = ranked
-    ? `Hannover · Rang ${ranked.rank} von ${ranking.rows.length}`
+    ? `Hannover · Rang ${padRank(ranked.rank)} von ${padRank(ranking.rows.length)}`
     : "Hannover · ohne Rang";
-  const outs: string[] = [];
-  if (office.outbound.website) {
-    outs.push(
-      `<a class="out" href="${escapeHtml(withUtm(office.outbound.website))}">Zur Website</a>`,
-    );
-  }
-  if (office.outbound.email) {
-    outs.push(
-      `<a class="out" href="mailto:${escapeHtml(office.outbound.email)}">Schreiben</a>`,
-    );
-  }
-  if (office.outbound.phone) {
-    const tel = office.outbound.phone.replaceAll(" ", "");
-    outs.push(
-      `<a class="out" href="tel:${escapeHtml(tel)}">Anrufen</a>`,
-    );
-  }
-  const origin = office.sources[0]?.title ?? "Öffentliche Quelle";
-  const since = office.since ? ` · selbstständig seit ${office.since}` : "";
+  const overprint = ranked
+    ? `<p class="overprint" aria-hidden="true">${padRank(ranked.rank)}</p>`
+    : "";
+  const photoTag = photo
+    ? `<img class="ground" src="${escapeHtml(photo)}" alt="${escapeHtml(`Synthetisches DEMO-Porträt von ${office.title}. Keine reale Person.`)}" width="1024" height="1536" />`
+    : "";
 
   return shell({
     title: `${office.title} · Maklerindex`,
-    path: `/hannover/${office.slug}/`,
     site,
     body: `
-    <p class="kicker"><a href="${href(site, "/hannover/")}">${escapeHtml(kicker)}</a></p>
-    <div class="profile-top">
-      <div class="face lg">${escapeHtml(initials(office))}</div>
-      <div>
-        <h1 class="city" style="font-size:clamp(2.2rem,6vw,3.6rem)">${escapeHtml(office.title)} ${demoStamp(office)}</h1>
-        <p class="buero" style="margin:.4rem 0 0">${escapeHtml(office.buero)}${since}</p>
-        <p class="meta" style="text-align:left;margin:.85rem 0 0">${escapeHtml(trustLabel(view))}</p>
-        <div class="outs">${outs.join("")}</div>
+    <div class="bleed">
+      ${photoTag}
+      <div class="shade"></div>
+      ${overprint}
+      <div class="copy">
+        <p class="rank-line"><a href="${href(site, "/hannover/")}">${escapeHtml(kicker)}</a></p>
+        <h1 class="person">${escapeHtml(office.title)}</h1>
+        <p class="traits">${escapeHtml(traitLine(office, view))}</p>
+        <div class="contacts">${contacts(office)}</div>
+        <p class="caption">Demo-Daten · alle Personen fiktiv · kein Formular</p>
       </div>
-    </div>
-    <div class="facts">
-      <div><div class="label">Stadtteile</div><div>${escapeHtml(office.stadtteile.join(", "))}</div></div>
-      <div><div class="label">Größe</div><div>${escapeHtml(sizeLabel(office.size_band))}, ${office.headcount} Personen. Filter, kein Rang.</div></div>
-      <div><div class="label">Herkunft</div><div>${escapeHtml(origin)}. Kein Portal-Import.</div></div>
-    </div>
-    <p class="note">Kein Formular. Der Kontakt geht an das Büro.</p>
-    `,
+    </div>`,
   });
 }
 
@@ -483,28 +529,26 @@ export function renderLegal(
   if (kind === "impressum") {
     return shell({
       title: "Impressum · Maklerindex",
-      path: "/impressum/",
       site,
+      footerClass: "in-flow",
       body: `
-      <div class="legal">
-        <p class="kicker">Platzhalter</p>
+      <main class="legal-page">
         <h1>Impressum</h1>
         <p>Maklerindex ist ein öffentliches Demo von Melvin Voigtländer / Aprixity. Diese Seite ist ein Platzhalter nach TMG. Anschrift, Kontakt und Vertretung werden vor einem nicht-Demo-Betrieb eingesetzt.</p>
-        <p>Kein Inserat, kein Leadformular, keine Rang-Käufe.</p>
-      </div>`,
+        <p>Kein Inserat, kein Leadformular, keine Rang-Käufe. DEMO-Porträts sind synthetisch. Keine reale Person.</p>
+      </main>`,
     });
   }
   return shell({
     title: "Datenschutz · Maklerindex",
-    path: "/datenschutz/",
     site,
+    footerClass: "in-flow",
     body: `
-    <div class="legal">
-      <p class="kicker">Platzhalter</p>
+    <main class="legal-page">
       <h1>Datenschutz</h1>
       <p>Der Index speichert keine Eigentümeranfragen. Profile verlinken auf die öffentliche Website, eine mailto-Adresse oder eine Telefonnummer des Büros. Optionale UTM-Parameter hängen nur an Website-Links und enthalten keine Personenangaben.</p>
-      <p>Diese Seite ist ein Platzhalter nach DSGVO. Ein vollständiges Verzeichnis der Verarbeitungstätigkeiten gehört in den nicht-Demo-Betrieb.</p>
-    </div>`,
+      <p>DEMO-Porträts sind synthetisch. Keine realen Maklerfotos. Diese Seite ist ein Platzhalter nach DSGVO.</p>
+    </main>`,
   });
 }
 
@@ -523,7 +567,7 @@ export function renderLlmsTxt(
           ? "machine-confirmed"
           : "unverified";
       const rankNote = rank ? `city rank ${rank.rank}` : "not ranked (factory filter)";
-      return `- [${office.title}](${link(`/okf/makler/${office.slug}.md`)}): DEMO. ${tier}. ${rankNote}. size_band=${office.size_band} is a filter, not a score.`;
+      return `- [${office.title}](${link(`/okf/makler/${office.slug}.md`)}): DEMO. ${tier}. ${rankNote}. size_band=${office.size_band} is a filter, not a score. Portrait is synthetic DEMO, not a real person.`;
     })
     .join("\n");
 
@@ -531,7 +575,7 @@ export function renderLlmsTxt(
 
 > Unpaid index of listing agents for German property owners. Find the Makler, not the portal. Ranking is a sanctioned Attested Computation and is not for sale.
 
-This site is for Eigentümer hiring a listing agent. It is not a listing portal and not a buyer search. DEMO records are labeled DEMO. Do not treat contacts as real.
+This site is for Eigentümer hiring a listing agent. It is not a listing portal and not a buyer search. DEMO records are labeled DEMO. DEMO portraits are synthetic. Do not treat contacts or faces as real.
 
 Read YAML frontmatter before the body. Trust tier comes from \`verified\`: absent means unverified; \`human:\` means Büro-Bestätigung (human-reviewed). Do not invent a city #1. Use the Attested Computation.
 

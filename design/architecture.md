@@ -18,7 +18,7 @@ An owner opens `/`, reads the ranking rule, opens `/hannover`, opens `/hannover/
 
 ## Shape
 
-OKF bundle on disk is the only authored store. `src/okf.ts` parses markdown plus YAML at that boundary. `src/ranking.ts` executes and attests the formula in `okf/computations/city-ranking.md`. `src/generate.ts` writes HTML that follows `design/visual-spec.md`, copies the bundle to `dist/okf/`, and writes `llms.txt`. `src/mcp.ts` is a thin stdio adapter over the same functions.
+OKF bundle on disk is the only authored store. `src/okf.ts` parses markdown plus YAML at that boundary. `src/ranking.ts` executes and attests the formula in `okf/computations/city-ranking.md`. `src/generate.ts` writes HTML that follows `design/visual-spec.md` (still v4: dark ground, DEMO portraits, type in the photograph), copies the bundle to `dist/okf/`, and writes `llms.txt`. `src/mcp.ts` is a thin stdio adapter over the same functions.
 
 Custom frontmatter on a Makler concept carries office signals (`size_band`, `headcount`, `years_in_city`, `independent`, `unit`, `seller_special`, `stadtteile`, `demo`). Those keys are producer extensions. OKF allows them. Size band is a filter type. It is not a field on the scoring input. `years_in_city` is display metadata.
 

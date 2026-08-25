@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { cp, mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,7 +42,7 @@ export async function generate(options?: {
   await mkdir(path.join(outputDirectory, "impressum"), { recursive: true });
   await mkdir(path.join(outputDirectory, "datenschutz"), { recursive: true });
 
-  await writeFile(path.join(outputDirectory, "index.html"), renderHome(bundle, site));
+  await writeFile(path.join(outputDirectory, "index.html"), renderHome(bundle, ranking, site));
   await writeFile(
     path.join(outputDirectory, "hannover", "index.html"),
     renderCity(bundle, ranking, asOf, site),
@@ -73,6 +74,15 @@ export async function generate(options?: {
     `${JSON.stringify(ranking.receipt, null, 2)}\n`,
   );
   await cp(bundleRoot, path.join(outputDirectory, "okf"), { recursive: true });
+  await mkdir(path.join(outputDirectory, "media"), { recursive: true });
+  const portraits = ["lena-harms.jpg", "nils-ahlers.jpg", "mira-vogt.jpg"];
+  for (const file of portraits) {
+    const src = path.join(repoRoot, "design", "portraits", file);
+    if (!existsSync(src)) {
+      throw new Error(`missing DEMO portrait ${file}`);
+    }
+    await cp(src, path.join(outputDirectory, "media", file));
+  }
   await mkdir(path.join(outputDirectory, "docs", "research"), { recursive: true });
   await cp(
     path.join(repoRoot, "docs", "research"),

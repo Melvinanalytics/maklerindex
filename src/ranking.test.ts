@@ -1,12 +1,14 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { mkdtemp, readFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { loadBundle, parseFormulaFromJson } from "./okf.ts";
-import { attestReceipt, rankCity, rankingSentence, scoreMakler } from "./ranking.ts";
+import { attestReceipt, rankCity, scoreMakler } from "./ranking.ts";
 import { generate } from "./generate.ts";
+import { homeLead } from "./site.ts";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const asOf = new Date("2026-08-25T12:00:00Z");
@@ -164,26 +166,32 @@ test("generate writes the three owner routes, DEMO, weights, and llms.txt", asyn
     path.join(outputDirectory, "docs", "research", "consensus-2026-08-25.md"),
     "utf8",
   );
-  assert.match(home, /Finde den Makler, nicht das Portal/);
-  assert.match(home, new RegExp(rankingSentence().replaceAll(".", "\\.")));
-  assert.match(home, /Gewichte 25, 20, 25 und 30/);
-  assert.match(home, /Sichtbar ist das Büro und die Person/);
+  assert.match(home, /Finde den Makler,/);
+  assert.match(home, /nicht das Portal/);
+  assert.match(home, new RegExp(homeLead().replaceAll(".", "\\.")));
+  assert.match(home, /Hannover ansehen/);
+  assert.match(home, /Demo-Daten/);
+  assert.match(home, /Outfit/);
   assert.doesNotMatch(home, /McMakler/);
   assert.doesNotMatch(home, /Vertriebsfabrik/);
   assert.doesNotMatch(home, /<form/i);
+  assert.doesNotMatch(home, /<button/i);
+  assert.doesNotMatch(home, /Instrument Serif/);
+  assert.ok(
+    existsSync(path.join(outputDirectory, "media", "lena-harms.jpg")),
+    "DEMO portrait must ship with the site",
+  );
   assert.match(city, /Lena Harms/);
   assert.match(city, /Mira Vogt/);
-  assert.match(city, /Demo/);
-  assert.match(city, /<button type="button" class="on" data-filter="boutique">/);
-  assert.match(city, /<button type="button" data-filter="small">/);
-  assert.match(city, /<button type="button" data-filter="mid">/);
-  assert.match(city, /apply\(\);/);
-  assert.match(city, /\.row\[hidden\] \{ display: none; \}/);
-  assert.match(city, /Größe filtert\. Review-Zahl und Auftragslast heben niemanden/);
+  assert.match(city, /Demo-Daten|fiktiv/);
+  assert.doesNotMatch(city, /<button/i);
   assert.doesNotMatch(city, /Hanseat Residenz/);
   assert.match(profile, /Büro bestätigt/);
-  assert.match(profile, /Kein Formular/);
+  assert.match(profile, /kein Formular/i);
+  assert.match(profile, /Schreiben/);
+  assert.match(profile, /Anrufen/);
   assert.doesNotMatch(profile, /<form/i);
+  assert.doesNotMatch(profile, /<button/i);
   assert.match(profile, /00000/);
   assert.match(llms, /# Maklerindex/);
   assert.match(llms, /human-reviewed/);
@@ -192,7 +200,7 @@ test("generate writes the three owner routes, DEMO, weights, and llms.txt", asyn
   assert.match(robots, /User-agent: \*/);
   assert.match(robots, /Allow: \/llms\.txt/);
   assert.match(research, /Fang, L\./);
-  assert.doesNotMatch(home, /Inter/);
+  assert.doesNotMatch(home, /\bInter\b/);
   const ownerHtml = `${home}\n${city}\n${profile}`;
   assert.doesNotMatch(ownerHtml, /Fang|Hayunga|Turnbull|Dombrow|Dabholkar|Yelowitz|Owusu|DEMATEL|TOPSIS|\bSAW\b/);
 });
