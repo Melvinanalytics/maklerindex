@@ -13,6 +13,10 @@ sources:
     title: Maklerindex repository
     author: human:melvin-voigtlaender
     last_modified: 2026-08-25
+  - id: ranking-spec
+    resource: /docs/specs/02-ranking.md
+    title: Ranking spec
+    last_modified: 2026-08-25
   - id: consensus-2026-08-25
     resource: /docs/research/consensus-2026-08-25.md
     title: Literature lock for city ranking (Consensus 2026-08-25)
@@ -24,7 +28,7 @@ sources:
 
 Der Stadtrang ist nicht käuflich. Keine Anzeige, keine Leadgebühr, kein Pay-for-placement.
 
-Die begründende Literatur steht in `docs/research/consensus-2026-08-25.md`. Auf `/` stehen nur die Summe und die Gewichte.
+Die gesperrte Spezifikation steht in `docs/specs/02-ranking.md`. Die begründende Literatur steht in `docs/research/consensus-2026-08-25.md`. Auf `/` stehen nur die Summe und die Gewichte.
 
 ## Darf in die Formel
 

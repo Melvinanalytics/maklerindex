@@ -55,7 +55,7 @@ Der Rang ist die veröffentlichte Summe aus Ortskenntnis, Verkaufsspezialisierun
 
 Gewichte 25, 20, 25 und 30. Nicht käuflich. Bürogröße zählt nicht mit.
 
-The executable form is published SAW in `okf/computations/city-ranking.md`. The cited papers live in `docs/research/consensus-2026-08-25.md`, not in the HTML chrome. `size_band: factory` is ineligible. Headcount is a filter, never a score. `years_in_city` is display metadata.
+The executable form is published SAW in `okf/computations/city-ranking.md`. The cited papers live in `docs/research/consensus-2026-08-25.md`, not in the HTML chrome. Locked specs: `docs/specs/`. `size_band: factory` is ineligible. Headcount is a filter, never a score. `years_in_city` is display metadata.
 
 Visual contract: `design/visual-spec.md`. Architecture: `design/architecture.md`.
 
