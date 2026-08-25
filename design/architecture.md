@@ -14,7 +14,7 @@ pnpm dev
 
 `pnpm generate` loads `okf/`, validates concepts, runs the sanctioned city ranking, writes `dist/`. `pnpm dev` serves `dist/`. `pnpm mcp` answers `list_cities`, `rank_city`, and `get_makler` from the same load path.
 
-An owner opens `/`, reads the ranking rule, opens `/hannover`, opens `/hannover/lena-harms`, follows an outbound link. An LLM reads `/llms.txt`, then `/okf/makler/*.md`, and filters on `verified` before the body.
+An owner opens `/`, reads the ranking rule, opens `/hannover`, opens `/hannover/katharina-brandt`, follows an outbound link. An LLM reads `/llms.txt`, then `/okf/makler/*.md`, and filters on `verified` before the body.
 
 ## Shape
 

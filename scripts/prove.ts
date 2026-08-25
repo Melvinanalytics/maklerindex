@@ -55,10 +55,10 @@ await new Promise<void>((resolve) => server.listen(4173, "127.0.0.1", resolve));
 try {
   const home = await fetchText(`${origin}/`);
   const city = await fetchText(`${origin}/hannover/`);
-  const profile = await fetchText(`${origin}/hannover/lena-harms/`);
+  const profile = await fetchText(`${origin}/hannover/katharina-brandt/`);
   const llms = await fetchText(`${origin}/llms.txt`);
   const robots = await fetchText(`${origin}/robots.txt`);
-  const okf = await fetchText(`${origin}/okf/makler/lena-harms.md`);
+  const okf = await fetchText(`${origin}/okf/makler/katharina-brandt.md`);
 
   assert.match(home, /Finde den Makler,/);
   assert.match(home, /nicht das Portal/);
@@ -69,7 +69,7 @@ try {
   assert.doesNotMatch(home, /McMakler/);
   assert.doesNotMatch(home, /<form/i);
   assert.doesNotMatch(home, /Instrument Serif/);
-  assert.match(city, /Lena Harms/);
+  assert.match(city, /Katharina Brandt/);
   assert.match(city, /fiktiv|Demo/);
   assert.doesNotMatch(city, /<button/i);
   assert.doesNotMatch(city, /Hanseat Residenz/);
@@ -79,7 +79,7 @@ try {
   assert.match(profile, /Anrufen/);
   assert.doesNotMatch(profile, /<form/i);
   assert.doesNotMatch(profile, /<button/i);
-  const portrait = await fetch(`${origin}/media/lena-harms.jpg`);
+  const portrait = await fetch(`${origin}/media/katharina-brandt.jpg`);
   assert.equal(portrait.status, 200, "DEMO portrait");
   assert.match(portrait.headers.get("content-type") ?? "", /image\/jpeg/);
   assert.match(llms, /Attested Computation/);
@@ -89,10 +89,18 @@ try {
     `${origin}/docs/research/consensus-2026-08-25.md`,
   );
   assert.match(research, /published SAW/);
-  assert.match(okf, /verified: \{ by: human:lena-harms-demo/);
-  assert.deepEqual(ranked, ["lena-harms", "nils-ahlers", "mira-vogt"]);
+  assert.match(okf, /verified: \{ by: human:katharina-brandt-demo/);
+  assert.deepEqual(ranked, [
+    "katharina-brandt",
+    "jonas-ehlers",
+    "miriam-osei",
+    "henrik-baumann",
+    "leyla-aydin",
+    "tobias-frenzel",
+    "sofie-berger",
+  ]);
   process.stdout.write(
-    `prove ok: ${basePath || ""}/, /hannover/, /hannover/lena-harms/, llms.txt, robots.txt, okf markdown\n`,
+    `prove ok: ${basePath || ""}/, /hannover/, /hannover/katharina-brandt/, llms.txt, robots.txt, okf markdown\n`,
   );
 } finally {
   server.close();

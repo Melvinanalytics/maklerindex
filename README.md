@@ -4,7 +4,7 @@ Finde den Makler, nicht das Portal. An unpaid index of listing agents for German
 
 Live site: https://melvinanalytics.github.io/maklerindex/
 
-GitHub Pages, from `main`, project path `/maklerindex/`. The three owner screens are `/`, `/hannover/`, and `/hannover/lena-harms/`.
+GitHub Pages, from `main`, project path `/maklerindex/`. The three owner screens are `/`, `/hannover/`, and `/hannover/katharina-brandt/`.
 
 The product is the OKF v0.2 bundle in `okf/`. The site, `llms.txt`, and the MCP server are projections of that bundle. `robots.txt` and `llms.txt` are written into `dist/` on generate. They are not repo-only files.
 
@@ -24,7 +24,7 @@ Open these routes:
 
 - http://127.0.0.1:4173/
 - http://127.0.0.1:4173/hannover/
-- http://127.0.0.1:4173/hannover/lena-harms/
+- http://127.0.0.1:4173/hannover/katharina-brandt/
 
 Every DEMO office is labeled DEMO. Contacts use `example.invalid`. There is no form.
 

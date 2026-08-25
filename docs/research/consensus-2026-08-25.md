@@ -60,9 +60,13 @@ Tie-break after the sum: confirmation, then person, then micromarket, then slug.
 
 Hannover DEMO scoring under this lock:
 
-- Lena Harms: three Stadtteile, seller-special, person, confirmed. Sum 1.0.
-- Nils Ahlers: one Stadtteil, seller-special, person, confirmed. Sum 1.0. Slug after Lena.
-- Mira Vogt: micromarket, seller-special, person, no confirmation. Sum 0.70. Present in the attested list. Hidden on `/hannover/` until the Klein filter is on.
+- Katharina Brandt: two Stadtteile, seller-special, person, confirmed. Sum 1.0.
+- Jonas Ehlers: micromarket, person, confirmed, no seller-special. Sum 0.80.
+- Miriam Osei: four Stadtteile so no micromarket, seller-special, person, confirmed. Sum 0.75.
+- Henrik Baumann: micromarket, seller-special, person, no confirmation. Sum 0.70.
+- Leyla Aydin: four Stadtteile, no seller-special, person, confirmed. Sum 0.55.
+- Tobias Frenzel: micromarket, person, no seller-special, no confirmation. Sum 0.50.
+- Sofie Berger: four Stadtteile, seller-special, person, no confirmation. Sum 0.45.
 - Factory band: in the corpus, out of the rank.
 
 ## References

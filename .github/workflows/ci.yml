@@ -28,13 +28,13 @@ jobs:
         run: |
           test -f dist/index.html
           test -f dist/hannover/index.html
-          test -f dist/hannover/lena-harms/index.html
+          test -f dist/hannover/katharina-brandt/index.html
           test -f dist/llms.txt
           test -f dist/robots.txt
           test -f dist/.nojekyll
           grep -q 'Demo' dist/hannover/index.html
-          grep -q 'Kein Formular' dist/hannover/lena-harms/index.html
-          ! grep -qi '<form' dist/index.html dist/hannover/index.html dist/hannover/lena-harms/index.html
+          grep -q 'Kein Formular' dist/hannover/katharina-brandt/index.html
+          ! grep -qi '<form' dist/index.html dist/hannover/index.html dist/hannover/katharina-brandt/index.html
       - name: Generate Pages-shaped tree and prove it
         env:
           BASE_PATH: /maklerindex

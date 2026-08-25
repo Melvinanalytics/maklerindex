@@ -38,7 +38,7 @@ Motion: none beyond underline offset on text links. Honor `prefers-reduced-motio
 
 ## Portraits
 
-DEMO only. Synthetic faces in `design/portraits/`. Label them. Do not scrape real Makler photos. Real portraits later only after claim.
+DEMO only. Seven synthetic faces in `design/portraits/`: katharina-brandt, jonas-ehlers, miriam-osei, henrik-baumann, leyla-aydin, tobias-frenzel, sofie-berger. Label them fictional. Do not scrape real Makler photos. Real portraits later only after claim.
 
 Alt text states the face is synthetic and not a real person.
 

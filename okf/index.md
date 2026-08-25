@@ -17,7 +17,11 @@ Unbezahlter Index unabhängiger Maklerbüros für Eigentümer, die einen Verkauf
 
 # Büros
 
-* [Lena Harms, Büro Kleefeld](makler/lena-harms.md) - Demo, Büro bestätigt
-* [Nils Ahlers, Lister Platz](makler/nils-ahlers.md) - Demo, Büro bestätigt
-* [Mira Vogt, Nordstadt](makler/mira-vogt.md) - Demo, unbestätigt
+* [Katharina Brandt, Brandt Immobilien](makler/katharina-brandt.md) - Demo, Büro bestätigt
+* [Jonas Ehlers, Lister Platz](makler/jonas-ehlers.md) - Demo, Büro bestätigt
+* [Miriam Osei, Osei Immobilien](makler/miriam-osei.md) - Demo, Büro bestätigt
+* [Henrik Baumann, Kleefeld](makler/henrik-baumann.md) - Demo, unbestätigt
+* [Leyla Aydin, Aydin Hannover](makler/leyla-aydin.md) - Demo, Büro bestätigt
+* [Tobias Frenzel, Mitte](makler/tobias-frenzel.md) - Demo, unbestätigt
+* [Sofie Berger, Berger Stadt](makler/sofie-berger.md) - Demo, unbestätigt
 * [Hanseat Residenz Vertrieb](makler/hanseat-residenz.md) - Demo, Fabrikmaßstab, nicht gerankt

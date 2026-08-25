@@ -18,7 +18,7 @@ Outfit 300–700. Bronze `#c4a574` only for the home text link and quiet rank ma
 
 ## Portraits
 
-DEMO only. Synthetic files in `design/portraits/`. Alt text says the face is synthetic. Do not scrape real Makler photos. Real portraits later only after claim.
+DEMO only. Seven synthetic files in `design/portraits/` (katharina-brandt through sofie-berger). Alt text says the face is synthetic. Do not scrape real Makler photos. Real portraits later only after claim.
 
 ## Trust in the UI
 

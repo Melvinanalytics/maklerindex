@@ -75,7 +75,15 @@ export async function generate(options?: {
   );
   await cp(bundleRoot, path.join(outputDirectory, "okf"), { recursive: true });
   await mkdir(path.join(outputDirectory, "media"), { recursive: true });
-  const portraits = ["lena-harms.jpg", "nils-ahlers.jpg", "mira-vogt.jpg"];
+  const portraits = [
+    "katharina-brandt.jpg",
+    "jonas-ehlers.jpg",
+    "miriam-osei.jpg",
+    "henrik-baumann.jpg",
+    "leyla-aydin.jpg",
+    "tobias-frenzel.jpg",
+    "sofie-berger.jpg",
+  ];
   for (const file of portraits) {
     const src = path.join(repoRoot, "design", "portraits", file);
     if (!existsSync(src)) {

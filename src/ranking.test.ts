@@ -36,64 +36,68 @@ const validSaw = {
   ],
 };
 
-test("Hannover rank is Lena, Nils, Mira and excludes the factory office", async () => {
+test("Hannover rank is seven DEMO offices and excludes the factory office", async () => {
   const bundle = await loadBundle(path.join(repoRoot, "okf"));
   const ranking = rankCity(bundle, "hannover", asOf);
   assert.deepEqual(ranking.receipt.ordered_slugs, [
-    "lena-harms",
-    "nils-ahlers",
-    "mira-vogt",
+    "katharina-brandt",
+    "jonas-ehlers",
+    "miriam-osei",
+    "henrik-baumann",
+    "leyla-aydin",
+    "tobias-frenzel",
+    "sofie-berger",
   ]);
   assert.ok(!ranking.receipt.ordered_slugs.includes("hanseat-residenz"));
-  assert.deepEqual(ranking.receipt.scores, [1, 1, 0.7]);
+  assert.deepEqual(ranking.receipt.scores, [1, 0.8, 0.75, 0.7, 0.55, 0.5, 0.45]);
   assert.equal(attestReceipt(bundle, "hannover", asOf, ranking.receipt), true);
-  const lena = ranking.rows[0];
-  const mira = ranking.rows[2];
-  assert.ok(lena);
-  assert.ok(mira);
-  assert.equal(lena.breakdown.confirmation, 1);
-  assert.equal(mira.breakdown.confirmation, 0);
-  assert.equal(mira.points, 0.7);
+  const first = ranking.rows[0];
+  const fourth = ranking.rows[3];
+  assert.ok(first);
+  assert.ok(fourth);
+  assert.equal(first.breakdown.confirmation, 1);
+  assert.equal(fourth.breakdown.confirmation, 0);
+  assert.equal(fourth.points, 0.7);
 });
 
 test("headcount is not a score input", async () => {
   const bundle = await loadBundle(path.join(repoRoot, "okf"));
-  const lena = bundle.makler.find((item) => item.slug === "lena-harms");
-  assert.ok(lena);
-  const before = scoreMakler(lena, bundle.computation.formula, asOf);
-  const mutated = { ...lena, headcount: 10_000 };
+  const katharina = bundle.makler.find((item) => item.slug === "katharina-brandt");
+  assert.ok(katharina);
+  const before = scoreMakler(katharina, bundle.computation.formula, asOf);
+  const mutated = { ...katharina, headcount: 10_000 };
   const after = scoreMakler(mutated, bundle.computation.formula, asOf);
   assert.equal(after.points, before.points);
 });
 
 test("years_in_city is not a score input", async () => {
   const bundle = await loadBundle(path.join(repoRoot, "okf"));
-  const lena = bundle.makler.find((item) => item.slug === "lena-harms");
-  assert.ok(lena);
-  const before = scoreMakler(lena, bundle.computation.formula, asOf);
-  const mutated = { ...lena, years_in_city: 99 };
+  const katharina = bundle.makler.find((item) => item.slug === "katharina-brandt");
+  assert.ok(katharina);
+  const before = scoreMakler(katharina, bundle.computation.formula, asOf);
+  const mutated = { ...katharina, years_in_city: 99 };
   const after = scoreMakler(mutated, bundle.computation.formula, asOf);
   assert.equal(after.points, before.points);
 });
 
 test("independence is not a score input", async () => {
   const bundle = await loadBundle(path.join(repoRoot, "okf"));
-  const lena = bundle.makler.find((item) => item.slug === "lena-harms");
-  assert.ok(lena);
-  const before = scoreMakler(lena, bundle.computation.formula, asOf);
-  const mutated = { ...lena, independent: false };
+  const katharina = bundle.makler.find((item) => item.slug === "katharina-brandt");
+  assert.ok(katharina);
+  const before = scoreMakler(katharina, bundle.computation.formula, asOf);
+  const mutated = { ...katharina, independent: false };
   const after = scoreMakler(mutated, bundle.computation.formula, asOf);
   assert.equal(after.points, before.points);
 });
 
 test("a fourth Stadtteil drops the micromarket criterion", async () => {
   const bundle = await loadBundle(path.join(repoRoot, "okf"));
-  const lena = bundle.makler.find((item) => item.slug === "lena-harms");
-  assert.ok(lena);
-  const before = scoreMakler(lena, bundle.computation.formula, asOf);
+  const katharina = bundle.makler.find((item) => item.slug === "katharina-brandt");
+  assert.ok(katharina);
+  const before = scoreMakler(katharina, bundle.computation.formula, asOf);
   const mutated = {
-    ...lena,
-    stadtteile: [...lena.stadtteile, "Linden"],
+    ...katharina,
+    stadtteile: [...katharina.stadtteile, "Linden", "Ricklingen"],
   };
   const after = scoreMakler(mutated, bundle.computation.formula, asOf);
   assert.equal(before.micromarket, 1);
@@ -106,7 +110,7 @@ test("attester rejects a swapped first place", async () => {
   const ranking = rankCity(bundle, "hannover", asOf);
   const forged = {
     ...ranking.receipt,
-    ordered_slugs: ["mira-vogt", "lena-harms", "nils-ahlers"],
+    ordered_slugs: ["sofie-berger", "katharina-brandt", "jonas-ehlers"],
   };
   assert.equal(attestReceipt(bundle, "hannover", asOf, forged), false);
 });
@@ -157,7 +161,7 @@ test("generate writes the three owner routes, DEMO, weights, and llms.txt", asyn
     "utf8",
   );
   const profile = await readFile(
-    path.join(outputDirectory, "hannover", "lena-harms", "index.html"),
+    path.join(outputDirectory, "hannover", "katharina-brandt", "index.html"),
     "utf8",
   );
   const llms = await readFile(path.join(outputDirectory, "llms.txt"), "utf8");
@@ -178,11 +182,11 @@ test("generate writes the three owner routes, DEMO, weights, and llms.txt", asyn
   assert.doesNotMatch(home, /<button/i);
   assert.doesNotMatch(home, /Instrument Serif/);
   assert.ok(
-    existsSync(path.join(outputDirectory, "media", "lena-harms.jpg")),
+    existsSync(path.join(outputDirectory, "media", "katharina-brandt.jpg")),
     "DEMO portrait must ship with the site",
   );
-  assert.match(city, /Lena Harms/);
-  assert.match(city, /Mira Vogt/);
+  assert.match(city, /Katharina Brandt/);
+  assert.match(city, /Sofie Berger/);
   assert.match(city, /Demo-Daten|fiktiv/);
   assert.doesNotMatch(city, /<button/i);
   assert.doesNotMatch(city, /Hanseat Residenz/);

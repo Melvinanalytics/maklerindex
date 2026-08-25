@@ -12,7 +12,15 @@ import {
   withBase,
 } from "./paths.ts";
 
-const DEMO_PORTRAITS = new Set(["lena-harms", "nils-ahlers", "mira-vogt"]);
+const DEMO_PORTRAITS = new Set([
+  "katharina-brandt",
+  "jonas-ehlers",
+  "miriam-osei",
+  "henrik-baumann",
+  "leyla-aydin",
+  "tobias-frenzel",
+  "sofie-berger",
+]);
 
 const CSS = `
 :root {
@@ -163,9 +171,7 @@ h1.city-title {
   overflow: hidden;
   background: #111;
 }
-.still:first-child { margin-left: 0; z-index: 3; }
-.still:nth-child(2) { z-index: 2; }
-.still:nth-child(3) { z-index: 1; }
+.still:first-child { margin-left: 0; }
 .still img {
   width: 100%;
   height: 100%;
@@ -449,13 +455,14 @@ export function renderCity(
   asOf: Date,
   site: SiteOptions,
 ): string {
+  const n = ranking.rows.length;
   const stills = ranking.rows
     .map((row) => {
       const office = bySlug(bundle, row.slug);
       const photo = portraitSrc(site, office.slug);
       const alt = `Synthetisches DEMO-Porträt von ${office.title}. Keine reale Person.`;
       return `
-      <a class="still" href="${href(site, `/hannover/${office.slug}/`)}" aria-label="${escapeHtml(`${padRank(row.rank)} ${office.title}`)}">
+      <a class="still" href="${href(site, `/hannover/${office.slug}/`)}" style="z-index:${n - row.rank + 1}" aria-label="${escapeHtml(`${padRank(row.rank)} ${office.title}`)}">
         ${
           photo
             ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(alt)}" width="1024" height="1536" />`
@@ -467,7 +474,6 @@ export function renderCity(
     })
     .join("\n");
 
-  const n = ranking.rows.length;
   const kicker = `${countWord(n)} Porträts · geordnet nach vier veröffentlichten Kriterien · Stand: ${formatDate(asOf.toISOString())}`;
 
   return shell({
