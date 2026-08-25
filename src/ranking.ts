@@ -14,25 +14,38 @@ export function formulaDigest(formula: Formula): string {
   return createHash("sha256").update(JSON.stringify(formula)).digest("hex");
 }
 
+function roundScore(value: number): number {
+  return Number(value.toFixed(4));
+}
+
+function criterion(value: boolean): number {
+  return value ? 1 : 0;
+}
+
 export function scoreMakler(
   makler: Makler,
   formula: Formula,
   asOf: Date,
 ): RankedRow["breakdown"] & { points: number } {
-  const confirmation =
+  const micromarket = criterion(
+    makler.stadtteile.length >= 1 &&
+      makler.stadtteile.length <= formula.micromarket_max_stadtteile,
+  );
+  const seller_special = criterion(makler.seller_special);
+  const person = criterion(makler.unit === "person");
+  const confirmation = criterion(
     !isStale(makler.stale_after, asOf) &&
-    trustTier(makler.verified) === "human-reviewed"
-      ? formula.office_confirmation_points
-      : 0;
-  const years = Math.min(Math.max(makler.years_in_city, 0), formula.local_years_cap);
-  const local_years = years * formula.points_per_local_year;
-  const independence = makler.independent ? formula.independence_points : 0;
-  return {
-    confirmation,
-    local_years,
-    independence,
-    points: confirmation + local_years + independence,
-  };
+      trustTier(makler.verified) === "human-reviewed" &&
+      makler.sources.length > 0,
+  );
+  const weights = formula.weights;
+  const points = roundScore(
+    micromarket * weights.micromarket +
+      seller_special * weights.seller_special +
+      person * weights.person +
+      confirmation * weights.confirmation,
+  );
+  return { micromarket, seller_special, person, confirmation, points };
 }
 
 export function rankCity(bundle: Bundle, city: string, asOf: Date): CityRanking {
@@ -53,11 +66,11 @@ export function rankCity(bundle: Bundle, city: string, asOf: Date): CityRanking 
       if (right.breakdown.confirmation !== left.breakdown.confirmation) {
         return right.breakdown.confirmation - left.breakdown.confirmation;
       }
-      if (right.breakdown.local_years !== left.breakdown.local_years) {
-        return right.breakdown.local_years - left.breakdown.local_years;
+      if (right.breakdown.person !== left.breakdown.person) {
+        return right.breakdown.person - left.breakdown.person;
       }
-      if (right.breakdown.independence !== left.breakdown.independence) {
-        return right.breakdown.independence - left.breakdown.independence;
+      if (right.breakdown.micromarket !== left.breakdown.micromarket) {
+        return right.breakdown.micromarket - left.breakdown.micromarket;
       }
       return left.office.slug.localeCompare(right.office.slug);
     });
@@ -67,9 +80,10 @@ export function rankCity(bundle: Bundle, city: string, asOf: Date): CityRanking 
     slug: item.office.slug,
     points: item.breakdown.points,
     breakdown: {
+      micromarket: item.breakdown.micromarket,
+      seller_special: item.breakdown.seller_special,
+      person: item.breakdown.person,
       confirmation: item.breakdown.confirmation,
-      local_years: item.breakdown.local_years,
-      independence: item.breakdown.independence,
     },
   }));
 
@@ -105,5 +119,11 @@ export function attestReceipt(
 }
 
 export function rankingSentence(): string {
-  return "Der Rang in einer Stadt folgt einer festen Formel. Er ist nicht käuflich, und die Bürogröße zählt nicht mit.";
+  return "Der Rang ist die veröffentlichte Summe aus Ortskenntnis, Verkaufsspezialisierung, Person und Büro-Bestätigung.";
+}
+
+export function rankingWeightsSentence(formula: Formula): string {
+  const percent = (weight: number): string => String(Math.round(weight * 100));
+  const weights = formula.weights;
+  return `Gewichte ${percent(weights.micromarket)}, ${percent(weights.seller_special)}, ${percent(weights.person)} und ${percent(weights.confirmation)}. Nicht käuflich. Bürogröße zählt nicht mit.`;
 }

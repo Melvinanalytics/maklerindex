@@ -21,4 +21,4 @@ city: hannover
 
 Die öffentliche Liste liegt unter `/hannover`. Die Sortierung kommt nur aus [Stadtrang](/computations/city-ranking.md). Ein Agent darf Platz 1 nicht erfinden.
 
-Fabrikmaßstab (`size_band: factory`) steht im Korpus und bleibt aus der Rangliste.
+Größe filtert. Review-Zahl und Auftragslast heben niemanden. `size_band: factory` steht im Korpus und bleibt aus der Rangliste.

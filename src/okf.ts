@@ -10,6 +10,7 @@ import {
   type Source,
   type Stamp,
   type Status,
+  type UnitKind,
   parseActor,
 } from "./domain.ts";
 
@@ -124,6 +125,48 @@ function parseSizeBand(value: unknown, file: string): SizeBand {
   return band;
 }
 
+function parseUnit(value: unknown, file: string): UnitKind {
+  const unit = asString(value, file, "unit");
+  if (unit !== "person" && unit !== "firm") {
+    fail(file, "unit must be person or firm");
+  }
+  return unit;
+}
+
+const FORMULA_KEYS = new Set([
+  "kind",
+  "method",
+  "weights",
+  "micromarket_max_stadtteile",
+  "ineligible_size_bands",
+  "forbidden_terms",
+]);
+
+const WEIGHT_KEYS = ["micromarket", "seller_special", "person", "confirmation"] as const;
+
+const REQUIRED_FORBIDDEN_TERMS = [
+  "review_volume",
+  "stars",
+  "mandate_density",
+  "repeat_agency",
+  "pay_to_rank",
+  "listing_count",
+  "license_years",
+  "headcount",
+] as const;
+
+function objectKeys(value: unknown, into: string[]): void {
+  if (typeof value !== "object" || value === null) return;
+  if (Array.isArray(value)) {
+    for (const item of value) objectKeys(item, into);
+    return;
+  }
+  for (const [key, child] of Object.entries(value)) {
+    into.push(key);
+    objectKeys(child, into);
+  }
+}
+
 function parseOutbound(value: unknown, file: string): Outbound {
   if (value === undefined) return {};
   const row = asRecord(value, file, "outbound");
@@ -180,6 +223,8 @@ function parseMakler(doc: FrontmatterFile): Makler {
     headcount: asNumber(data.headcount, file, "headcount"),
     years_in_city: asNumber(data.years_in_city, file, "years_in_city"),
     independent: asBoolean(data.independent, file, "independent"),
+    unit: parseUnit(data.unit, file),
+    seller_special: asBoolean(data.seller_special, file, "seller_special"),
     since: data.since === undefined ? undefined : asNumber(data.since, file, "since"),
     outbound: parseOutbound(data.outbound, file),
   };
@@ -191,13 +236,67 @@ function parseFormula(body: string, file: string): Formula {
   const match = body.match(/```json\n([\s\S]*?)\n```/);
   if (!match?.[1]) fail(file, "Attested Computation needs a json fence");
   const raw: unknown = JSON.parse(match[1]);
+  return parseFormulaFromJson(raw, file);
+}
+
+export function parseFormulaFromJson(raw: unknown, file: string): Formula {
   const row = asRecord(raw, file, "formula");
-  const ineligible = asStringList(
+  const keys = Object.keys(row);
+  for (const key of keys) {
+    if (!FORMULA_KEYS.has(key)) fail(file, `unknown formula key ${key}`);
+  }
+
+  const nestedKeys: string[] = [];
+  objectKeys(raw, nestedKeys);
+  for (const key of nestedKeys) {
+    if ((REQUIRED_FORBIDDEN_TERMS as readonly string[]).includes(key)) {
+      fail(file, `forbidden formula key ${key}`);
+    }
+  }
+
+  const kind = asString(row.kind, file, "kind");
+  if (kind !== "city-ranking-saw-v1") {
+    fail(file, "formula.kind must be city-ranking-saw-v1");
+  }
+  const method = asString(row.method, file, "method");
+  if (method !== "saw") fail(file, "formula.method must be saw");
+
+  const weightsRow = asRecord(row.weights, file, "weights");
+  for (const key of Object.keys(weightsRow)) {
+    if (!(WEIGHT_KEYS as readonly string[]).includes(key)) {
+      fail(file, `unknown weight ${key}`);
+    }
+  }
+  const weights = {
+    micromarket: asNumber(weightsRow.micromarket, file, "weights.micromarket"),
+    seller_special: asNumber(weightsRow.seller_special, file, "weights.seller_special"),
+    person: asNumber(weightsRow.person, file, "weights.person"),
+    confirmation: asNumber(weightsRow.confirmation, file, "weights.confirmation"),
+  };
+  for (const [name, weight] of Object.entries(weights)) {
+    if (weight < 0) fail(file, `weight ${name} must be >= 0`);
+  }
+  const weightSum =
+    weights.micromarket + weights.seller_special + weights.person + weights.confirmation;
+  if (Math.abs(weightSum - 1) > 1e-9) {
+    fail(file, "SAW weights must sum to 1");
+  }
+
+  const maxStadtteile = asNumber(
+    row.micromarket_max_stadtteile,
+    file,
+    "micromarket_max_stadtteile",
+  );
+  if (!Number.isInteger(maxStadtteile) || maxStadtteile < 1) {
+    fail(file, "micromarket_max_stadtteile must be an integer >= 1");
+  }
+
+  const ineligibleRaw = asStringList(
     row.ineligible_size_bands,
     file,
     "ineligible_size_bands",
   );
-  for (const band of ineligible) {
+  const ineligible_size_bands: SizeBand[] = ineligibleRaw.map((band) => {
     if (
       band !== "boutique" &&
       band !== "small" &&
@@ -206,31 +305,24 @@ function parseFormula(body: string, file: string): Formula {
     ) {
       fail(file, `unknown size band ${band}`);
     }
+    return band;
+  });
+
+  const forbidden_terms = asStringList(row.forbidden_terms, file, "forbidden_terms");
+  for (const term of REQUIRED_FORBIDDEN_TERMS) {
+    if (!forbidden_terms.includes(term)) {
+      fail(file, `forbidden_terms must include ${term}`);
+    }
   }
-  const formula: Formula = {
-    kind: "city-ranking-v1",
-    office_confirmation_points: asNumber(
-      row.office_confirmation_points,
-      file,
-      "office_confirmation_points",
-    ),
-    points_per_local_year: asNumber(
-      row.points_per_local_year,
-      file,
-      "points_per_local_year",
-    ),
-    local_years_cap: asNumber(row.local_years_cap, file, "local_years_cap"),
-    independence_points: asNumber(
-      row.independence_points,
-      file,
-      "independence_points",
-    ),
-    ineligible_size_bands: ineligible as SizeBand[],
+
+  return {
+    kind: "city-ranking-saw-v1",
+    method: "saw",
+    weights,
+    micromarket_max_stadtteile: maxStadtteile,
+    ineligible_size_bands,
+    forbidden_terms,
   };
-  if (formula.kind !== "city-ranking-v1" && row.kind !== "city-ranking-v1") {
-    fail(file, "formula.kind must be city-ranking-v1");
-  }
-  return formula;
 }
 
 function parseComputation(doc: FrontmatterFile): Computation {

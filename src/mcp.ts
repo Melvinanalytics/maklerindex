@@ -75,7 +75,7 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
       computation: ranking.computation_file,
       receipt: ranking.receipt,
       rows: ranking.rows,
-      note: "Factory size_band is excluded. Headcount is not a score input.",
+      note: "Factory size_band is excluded. Headcount and years_in_city are not score inputs. Method is published SAW.",
     };
   }
   if (name === "get_makler") {

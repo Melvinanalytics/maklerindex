@@ -23,6 +23,8 @@ size_band: factory
 headcount: 120
 years_in_city: 20
 independent: false
+unit: firm
+seller_special: false
 since: 2006
 outbound:
   website: https://hanseat-residenz.example.invalid

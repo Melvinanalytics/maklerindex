@@ -33,7 +33,7 @@ export async function generate(options?: {
   await mkdir(path.join(outputDirectory, "impressum"), { recursive: true });
   await mkdir(path.join(outputDirectory, "datenschutz"), { recursive: true });
 
-  await writeFile(path.join(outputDirectory, "index.html"), renderHome());
+  await writeFile(path.join(outputDirectory, "index.html"), renderHome(bundle));
   await writeFile(
     path.join(outputDirectory, "hannover", "index.html"),
     renderCity(bundle, ranking, asOf),
@@ -60,6 +60,12 @@ export async function generate(options?: {
     `${JSON.stringify(ranking.receipt, null, 2)}\n`,
   );
   await cp(bundleRoot, path.join(outputDirectory, "okf"), { recursive: true });
+  await mkdir(path.join(outputDirectory, "docs", "research"), { recursive: true });
+  await cp(
+    path.join(repoRoot, "docs", "research"),
+    path.join(outputDirectory, "docs", "research"),
+    { recursive: true },
+  );
   await writeFile(
     path.join(outputDirectory, "okf", "index.html"),
     `<!doctype html><meta charset="utf-8" /><title>OKF</title><pre>See <a href="/okf/index.md">index.md</a> and the markdown tree.</pre>`,

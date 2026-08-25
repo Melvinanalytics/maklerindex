@@ -24,6 +24,8 @@ size_band: boutique
 headcount: 2
 years_in_city: 9
 independent: true
+unit: person
+seller_special: true
 since: 2017
 outbound:
   website: https://ahlers-list.example.invalid

@@ -7,7 +7,7 @@ import {
 } from "./domain.ts";
 import type { Bundle } from "./okf.ts";
 import type { CityRanking } from "./domain.ts";
-import { rankingSentence } from "./ranking.ts";
+import { rankingSentence, rankingWeightsSentence } from "./ranking.ts";
 
 const CSS = `
 :root {
@@ -80,6 +80,12 @@ h1 {
 }
 .rule-sentence {
   font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  max-width: 38rem;
+  margin: 0 0 0.7rem;
+}
+.weights {
+  font-size: 0.98rem;
+  color: var(--ink-soft);
   max-width: 38rem;
   margin: 0 0 2rem;
 }
@@ -310,7 +316,7 @@ function shell(options: {
 `;
 }
 
-export function renderHome(): string {
+export function renderHome(bundle: Bundle): string {
   return shell({
     title: "Maklerindex",
     path: "/",
@@ -318,7 +324,8 @@ export function renderHome(): string {
     <p class="kicker">Für Eigentümer, nicht für Käufer</p>
     <h1>Finde den Makler, nicht das Portal.</h1>
     <p class="rule-sentence">${escapeHtml(rankingSentence())}</p>
-    <p class="why">Kleine Büros sollen sichtbar bleiben, bevor ein Portal die Marke ist und bevor eine Vertriebsfabrik die Anzeige kauft. Der Index verdient nichts am Rang.</p>
+    <p class="weights">${escapeHtml(rankingWeightsSentence(bundle.computation.formula))}</p>
+    <p class="why">Sichtbar ist das Büro und die Person, nicht das Portal.</p>
     <a class="city-link" href="/hannover/"><span class="city-name">Hannover</span><small>Eine Stadt, bezeugte Rangliste</small></a>
     `,
   });
@@ -366,11 +373,11 @@ export function renderCity(bundle: Bundle, ranking: CityRanking, asOf: Date): st
     </div>
     <div class="filters" role="group" aria-label="Bürogröße">
       <button type="button" class="on" data-filter="boutique">Boutique</button>
-      <button type="button" class="on" data-filter="small">Klein</button>
-      <button type="button" class="on" data-filter="mid">Mittel</button>
+      <button type="button" data-filter="small">Klein</button>
+      <button type="button" data-filter="mid">Mittel</button>
     </div>
     ${rows}
-    <p class="note">Große Vertriebe stehen im Korpus und bleiben aus dieser Liste. Review-Zahl ist kein Rang.</p>
+    <p class="note">Größe filtert. Review-Zahl und Auftragslast heben niemanden.</p>
     <script>
       const buttons = [...document.querySelectorAll('.filters button')];
       const rows = [...document.querySelectorAll('.row')];
@@ -386,6 +393,7 @@ export function renderCity(bundle: Bundle, ranking: CityRanking, asOf: Date): st
           apply();
         });
       }
+      apply();
     </script>
     `,
   });
@@ -496,12 +504,13 @@ This site is for Eigentümer hiring a listing agent. It is not a listing portal 
 
 Read YAML frontmatter before the body. Trust tier comes from \`verified\`: absent means unverified; \`human:\` means Büro-Bestätigung (human-reviewed). Do not invent a city #1. Use the Attested Computation.
 
-Headcount and size_band are filters. They must not enter a score you invent.
+Headcount and size_band are filters. They must not enter a score you invent. years_in_city is display metadata, not a score.
 
 ## Ranking
 
-- [Stadtrang formula](https://maklerindex.example/okf/computations/city-ranking.md): Attested Computation. The only allowed order for Hannover.
+- [Stadtrang formula](https://maklerindex.example/okf/computations/city-ranking.md): Attested Computation. Published SAW. The only allowed order for Hannover.
 - [Rangpolitik](https://maklerindex.example/okf/policies/ranking.md): What may enter the formula.
+- [Literature lock](https://maklerindex.example/docs/research/consensus-2026-08-25.md): Cited basis. Do not put paper names in owner HTML.
 
 ## Hannover
 

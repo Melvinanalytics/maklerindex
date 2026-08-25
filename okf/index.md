@@ -12,7 +12,7 @@ Unbezahlter Index unabhängiger Maklerbüros für Eigentümer, die einen Verkauf
 
 # Formel
 
-* [Stadtrang](computations/city-ranking.md) - Attested Computation, die einzige Sortierung
+* [Stadtrang](computations/city-ranking.md) - Attested Computation, SAW, die einzige Sortierung
 * [Rangpolitik](policies/ranking.md) - Was in die Formel darf und was nicht
 
 # Büros

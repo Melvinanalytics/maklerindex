@@ -20,16 +20,18 @@ An owner opens `/`, reads the ranking rule, opens `/hannover`, opens `/hannover/
 
 OKF bundle on disk is the only authored store. `src/okf.ts` parses markdown plus YAML at that boundary. `src/ranking.ts` executes and attests the formula in `okf/computations/city-ranking.md`. `src/generate.ts` writes HTML that follows `design/visual-spec.md`, copies the bundle to `dist/okf/`, and writes `llms.txt`. `src/mcp.ts` is a thin stdio adapter over the same functions.
 
-Custom frontmatter on a Makler concept carries office signals (`size_band`, `headcount`, `years_in_city`, `independent`, `stadtteile`, `demo`). Those keys are producer extensions. OKF allows them. Size band is a filter type. It is not a field on the scoring input.
+Custom frontmatter on a Makler concept carries office signals (`size_band`, `headcount`, `years_in_city`, `independent`, `unit`, `seller_special`, `stadtteile`, `demo`). Those keys are producer extensions. OKF allows them. Size band is a filter type. It is not a field on the scoring input. `years_in_city` is display metadata.
 
-Formula, stored only in the Attested Computation body:
+Formula, stored only in the Attested Computation body, is published SAW. Cited basis: `docs/research/consensus-2026-08-25.md`.
 
-- 50 points if the concept is human-reviewed and not stale (Büro-Bestätigung)
-- 2 points per year in the city, cap 15
-- 20 points if `independent: true`
+- micromarket 0.25 if Stadtteil count is between 1 and 3
+- seller_special 0.20 if the office is marked seller-side
+- person 0.25 if `unit` is person
+- confirmation 0.30 if human-reviewed, not stale, and sources exist
 - Factory `size_band` is ineligible for a city rank
-- Tie-break: confirmation, years, independence, then slug
-- Review volume and headcount have no term
+- Tie-break: confirmation, person, micromarket, then slug
+- Review volume, mandate density, repeat-agency, listing count, license years, and headcount have no term
+- DEMATEL and TOPSIS stay off the runtime path
 
 ## Synthesis decision
 
@@ -51,4 +53,4 @@ Rejected from candidate 1: tagging every signal as `size-band:2-5` instead of fr
 
 ## Next implementation step
 
-Corpus fixtures, then parse and ranking tests, then HTML against the visual spec.
+Keep the SAW fence, the parser reject list, and the owner sentence in lockstep when the literature lock changes.

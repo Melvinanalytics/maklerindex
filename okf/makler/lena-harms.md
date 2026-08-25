@@ -24,6 +24,8 @@ size_band: boutique
 headcount: 4
 years_in_city: 12
 independent: true
+unit: person
+seller_special: true
 since: 2014
 outbound:
   website: https://buero-kleefeld.example.invalid

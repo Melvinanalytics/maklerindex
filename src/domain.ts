@@ -1,6 +1,7 @@
 export type SizeBand = "boutique" | "small" | "mid" | "factory";
 export type Status = "draft" | "stable" | "deprecated";
 export type TrustTier = "unverified" | "machine-confirmed" | "human-reviewed";
+export type UnitKind = "person" | "firm";
 
 export type Actor =
   | { kind: "human"; id: string }
@@ -50,17 +51,26 @@ export interface Makler {
   headcount: number;
   years_in_city: number;
   independent: boolean;
+  unit: UnitKind;
+  seller_special: boolean;
   since?: number;
   outbound: Outbound;
 }
 
+export interface FormulaWeights {
+  micromarket: number;
+  seller_special: number;
+  person: number;
+  confirmation: number;
+}
+
 export interface Formula {
-  kind: "city-ranking-v1";
-  office_confirmation_points: number;
-  points_per_local_year: number;
-  local_years_cap: number;
-  independence_points: number;
+  kind: "city-ranking-saw-v1";
+  method: "saw";
+  weights: FormulaWeights;
+  micromarket_max_stadtteile: number;
   ineligible_size_bands: SizeBand[];
+  forbidden_terms: string[];
 }
 
 export interface Computation {
@@ -83,9 +93,10 @@ export interface RankedRow {
   slug: string;
   points: number;
   breakdown: {
+    micromarket: number;
+    seller_special: number;
+    person: number;
     confirmation: number;
-    local_years: number;
-    independence: number;
   };
 }
 

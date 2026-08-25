@@ -58,21 +58,27 @@ Headline: Finde den Makler, nicht das Portal.
 
 Ranking rule, one sentence, immediately under the headline:
 
-Der Rang in einer Stadt folgt einer festen Formel. Er ist nicht käuflich, und die Bürogröße zählt nicht mit.
+Der Rang ist die veröffentlichte Summe aus Ortskenntnis, Verkaufsspezialisierung, Person und Büro-Bestätigung.
 
-Why, one short paragraph, softer ink. Then one city link: Hannover. Subline: Eine Stadt, bezeugte Rangliste.
+Quiet weights line under that sentence:
 
-No search box. No listing teaser. No "Jetzt bewerten".
+Gewichte 25, 20, 25 und 30. Nicht käuflich. Bürogröße zählt nicht mit.
+
+Why, one short paragraph, softer ink: Sichtbar ist das Büro und die Person, nicht das Portal. Then one city link: Hannover. Subline: Eine Stadt, bezeugte Rangliste.
+
+No search box. No listing teaser. No "Jetzt bewerten". Paper names stay out of this screen.
 
 ### City `/hannover`
 
 City name as the title. Beside it, or under it on small screens: Rang nach bezeugter Formel. Größe ist ein Filter, kein Preis.
 
-Filters: Boutique, Klein, Mittel. Default: all three on. Factory-scale offices are in the corpus and out of the ranked list.
+Filters: Boutique, Klein, Mittel. Default: Boutique on, Klein and Mittel off. Call the filter on load. Factory-scale offices are in the corpus and out of the ranked list.
 
 Each row, in order: rank numeral, initials field, name plus DEMO stamp, Büro and Stadtteile, then trust plus size as quiet meta. The row is a person. It is not an Inserat.
 
 Büro bestätigt is typeset meta, not a green badge. Unbestätigt is equally typeset. Headcount may appear as Boutique, 4 Personen. It must be visually quieter than the name.
+
+City note: Größe filtert. Review-Zahl und Auftragslast heben niemanden.
 
 ### Profile `/hannover/<slug>`
 

@@ -22,6 +22,8 @@ size_band: small
 headcount: 8
 years_in_city: 6
 independent: true
+unit: person
+seller_special: true
 since: 2020
 outbound:
   website: https://nordstadt-immo.example.invalid

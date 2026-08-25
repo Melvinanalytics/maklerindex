@@ -11,4 +11,4 @@ stale_after: 2027-02-25T00:00:00Z
 
 # Run
 
-`src/ranking.ts` reads the JSON fence in `/computations/city-ranking.md`, filters out `factory`, scores the remaining offices, and returns a receipt. Site generation and MCP both call this module. They do not carry a second formula.
+`src/ranking.ts` reads the SAW JSON fence in `/computations/city-ranking.md`, filters ineligible size bands, scores the remaining offices, and returns a receipt. Site generation and MCP both call this module. They do not carry a second formula. DEMATEL is not an executor.

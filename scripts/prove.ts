@@ -49,15 +49,22 @@ try {
   const okf = await fetchText("http://127.0.0.1:4173/okf/makler/lena-harms.md");
 
   assert.match(home, /Finde den Makler, nicht das Portal/);
-  assert.match(home, /Der Rang in einer Stadt folgt einer festen Formel/);
+  assert.match(home, /Der Rang ist die veröffentlichte Summe/);
+  assert.match(home, /Gewichte 25, 20, 25 und 30/);
   assert.match(home, /Instrument Serif/);
   assert.doesNotMatch(home, /\bInter\b/);
+  assert.doesNotMatch(home, /McMakler/);
   assert.match(city, /Lena Harms/);
   assert.match(city, /Demo/);
+  assert.match(city, /Größe filtert/);
   assert.doesNotMatch(city, /Hanseat Residenz/);
   assert.match(profile, /Büro bestätigt/);
   assert.match(profile, /Kein Formular/);
   assert.match(llms, /Attested Computation/);
+  const research = await fetchText(
+    "http://127.0.0.1:4173/docs/research/consensus-2026-08-25.md",
+  );
+  assert.match(research, /published SAW/);
   assert.match(okf, /verified: \{ by: human:lena-harms-demo/);
   assert.deepEqual(ranked, ["lena-harms", "nils-ahlers", "mira-vogt"]);
   process.stdout.write("prove ok: /, /hannover/, /hannover/lena-harms/, llms.txt, okf markdown\n");
